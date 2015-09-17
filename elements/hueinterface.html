@@ -1,0 +1,119 @@
+<script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+<link rel="import" href="../bower_components/jquery/dist/jquery.js">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="hue-interface">
+
+  <template>
+    <style>
+      /* CSS rules for your element */
+    </style>
+  
+    <!-- local DOM for your element -->
+    <span>{{connected}}</span>
+  </template>
+
+  <script>
+
+  
+    // element registration
+    Polymer({
+      is: "hue-interface",
+
+      // add properties and methods on the element's prototype
+
+      properties: {
+        // declare properties for the element's public API
+        connected: {
+          type: String,
+          value: "Nothing yet..."
+        },
+        ip: {
+          type: String,
+          value: "192.168.1.100"
+        },
+        username: {
+          type: String,
+          value: "15aaea924d8ebb7340da6aed1331e3"
+        },
+        hue: {
+          type: Hue,
+          value: {}//(new Hue())
+        },
+        lights: {
+          type: Array,
+          value: [
+          {
+            id:1,
+            modelId: "LLC011",
+          },
+          {
+            id:2,
+            modelId: "LLC010",
+          },
+          {
+            id:3,
+            modelId: "LLC020",
+          }
+        ],
+        notify: true
+          // computed: "computeLights(hue)"
+        }
+      },
+      ready: function(){
+        console.log("ready...");
+        success = this._getState();
+        if (!success){
+          this.connected = "failure connecting"
+          alert("did not successfully get state!");
+        } else{
+          this.connected = "Success connecting"
+        }
+      },
+      computeLights: function(hue){
+        lights = [
+          {
+            id:1,
+            modelId: "LLC011",
+          },
+          {
+            id:2,
+            modelId: "LLC010",
+          },
+          {
+            id:3,
+            modelId: "LLC020",
+          }
+        ]
+        return lights;
+      },
+      _getState: function(){
+        var _this = this;
+        $.ajax({
+          url: "http://"+ this.ip +"/api/"+ this.username,
+          type: "GET",
+          success: function(data){
+            _this.hue.state = data;
+            console.log(_this.hue);
+          }
+        })
+        return true;
+      }
+    });
+    
+    
+    var Hue = function() { }
+    Hue.prototype = new Object();
+    Hue.prototype.constructor = Hue;
+    Hue.prototype = {
+      state: {},
+      setName: function(){
+      
+      }
+    };
+
+
+    
+  </script>
+
+</dom-module>

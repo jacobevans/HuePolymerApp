@@ -1,0 +1,1 @@
+var QUnit = parent.QUnit

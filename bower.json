@@ -1,0 +1,22 @@
+{
+  "name": "HuePolymerApp",
+  "version": "0.0.1",
+  "authors": [
+    "Jacob Evans <jacobevans@livenation.com>"
+  ],
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "iron-elements": "PolymerElements/iron-elements#^1.0.3",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.5",
+    "polymer": "Polymer/polymer#^1.1.3",
+    "underscore": "~1.8.3"
+  }
+}

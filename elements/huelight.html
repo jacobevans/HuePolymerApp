@@ -1,0 +1,83 @@
+<script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+<link rel="import" href="../bower_components/jquery/dist/jquery.js">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="hue-light">
+
+  <template>
+    <style>
+      .border-icon {
+        display: inline-block;
+/*        background-color: #ccc;*/
+        border-radius: 8px;
+        padding: 4px;
+        border:2px solid #222;
+      }
+    </style>
+  
+    <!-- local DOM for your element -->
+    <p>Hue <span>{{typeName}}</span></p>
+    <iron-icon class="border-icon" src="{{iconPath}}"></iron-icon>
+  </template>
+
+  <script>
+
+    // element registration
+    Polymer({
+      is: "hue-light",
+
+      // add properties and methods on the element's prototype
+
+      properties: {
+        lightId: {
+          type: Number
+        },
+        modelId: {
+          type: String,
+          value: 'LLC011'
+        },
+        typeName: {
+          type: String,
+          computed: 'computeTypeName(modelId)'
+        },
+        iconPath: {
+          type: String,
+          computed: 'computeIconUrl(modelId)'
+        }
+      },
+      ready: function(){
+
+      },
+      lightAttributes:{
+        "LLC011": {
+          name: "Bloom",
+          icon: "lc_bloom"
+        },
+        "LLC020": {
+          name: "Go",
+          icon: "huego"
+        },
+        "LLC010": {
+          name: "Iris",
+          icon: "lc_iris"
+        },
+        "LCT001": {
+          name: "A19",
+          icon: "a19"
+        },
+        "LST001": {
+          name: "Lightstrip",
+          icon: "lightstrip"
+        }
+      },
+      computeTypeName: function(modelId){
+        return this.lightAttributes[modelId].name;
+      },
+      computeIconUrl: function(modelId){
+        return ("../assets/hue_icons/"+ this.lightAttributes[modelId].icon +"_outline.svg");
+      }
+    });
+    
+  </script>
+
+</dom-module>

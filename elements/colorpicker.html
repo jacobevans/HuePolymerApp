@@ -1,0 +1,50 @@
+<script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+<script src="../js/jqColor.js"></script>
+<script src="../js/jQueryColorPicker.min.js"></script>
+<link rel="import" href="../bower_components/jquery/dist/jquery.js">
+<link rel="stylesheet" href="../css/jqColor.css">
+
+
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="color-picker">
+
+  <template>
+    <style>
+      /* CSS rules for your element */
+    </style>
+  
+    <!-- local DOM for your element -->
+    <input class="color"></input>
+  </template>
+
+  <script>
+    // element registration
+    Polymer({
+      is: "color-picker",
+
+      // add properties and methods on the element's prototype
+
+      properties: {
+        // declare properties for the element's public API
+        defaultColor: {
+          type: String,
+          value: "FF0000"
+        }
+      },
+      ready: function(){
+        $('input.color').colorPicker({
+          color: this.defaultColor,
+          mode: 'hsl-s',
+          saturation: 1.0,
+          size: 3,
+          noAlpha: true
+      
+        });
+      }
+    });
+    
+  </script>
+
+</dom-module>

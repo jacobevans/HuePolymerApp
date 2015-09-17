@@ -1,0 +1,70 @@
+<script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+<link rel="import" href="../bower_components/jquery/dist/jquery.js">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+  <link rel="import" href="./hueinterface.html">
+  <link rel="import" href="./huelight.html">
+
+<dom-module id="hue-app">
+
+  <template>
+    <style>
+      /* CSS rules for your element */
+    </style>
+  
+    <!-- local DOM for your element -->
+    <hue-interface ip="192.168.0.100" lights="{{lights}}"></hue-interface>
+    <template is="dom-repeat" items="{{lights}}">
+      <hue-light light-id="{{item.id}}" model-id="{{item.modelId}}">
+    </template>
+
+<!--    <hue-light light-id="1" model-id="LLC011"></hue-light>
+    <hue-light light-id="2" model-id="LLC010"></hue-light>
+    <hue-light light-id="3" model-id="LLC020"></hue-light>
+     -->
+  </template>
+
+  <script>
+  // console.log("in huelight");
+  
+    // element registration
+    Polymer({
+      is: "hue-app",
+
+      // add properties and methods on the element's prototype
+
+      properties: {
+        // lightId: {
+        //   type: Number
+        // },
+        // modelId: {
+        //   type: String,
+        //   value: 'LLC011'
+        // },
+        // typeName: {
+        //   type: String,
+        //   computed: 'computeTypeName(modelId)'
+        // },
+        // iconPath: {
+        //   type: String,
+        //   computed: 'computeIconUrl(modelId)'
+        // },
+        lights: {
+          type: Array,
+          notify: true
+        }
+      },
+      ready: function(){
+        // console.log("ready...");
+        // success = this._getState();
+        // if (!success){
+        //   this.connected = "failure connecting"
+        //   alert("did not successfully get state!");
+        // } else{
+        //   this.connected = "Success connecting"
+        // }
+      }
+    });
+    
+  </script>
+
+</dom-module>
