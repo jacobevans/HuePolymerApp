@@ -93,6 +93,7 @@
           url: "http://"+ this.ip +"/api/"+ this.username,
           type: "GET",
           success: function(data){
+            debugger
             _this.hue.state = data;
             console.log(_this.hue);
           }
