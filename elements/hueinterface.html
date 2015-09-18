@@ -44,6 +44,11 @@
           type: Array,
           notify: true
           // computed: "computeLights(hue)"
+        },
+        groups: {
+          type: Array,
+          notify: true
+          // computed: "computeLights(hue)"
         }
       },
       ready: function(){
@@ -56,23 +61,23 @@
           this.connected = "Success connecting"
         }
       },
-      computeLights: function(hue){
-        lights = [
-          {
-            id:1,
-            modelId: "LLC011",
-          },
-          {
-            id:2,
-            modelId: "LLC010",
-          },
-          {
-            id:3,
-            modelId: "LLC020",
-          }
-        ]
-        return lights;
-      },
+      // computeLights: function(hue){
+      //   lights = [
+      //     {
+      //       id:1,
+      //       modelId: "LLC011",
+      //     },
+      //     {
+      //       id:2,
+      //       modelId: "LLC010",
+      //     },
+      //     {
+      //       id:3,
+      //       modelId: "LLC020",
+      //     }
+      //   ]
+      //   return lights;
+      // },
       blinkLight: function(id){
         $.ajax({
           url: this._baseURL() + "/lights/" + id + "/state",
@@ -107,8 +112,19 @@
                   modelId: pair[1].modelid
                 });
             });
+            groups = _.map(_.pairs(data.groups), function(pair){
+              return({
+                id: pair[0],
+                lights: pair[1].lights,
+                name: pair[1].name
+              });
+            });
             _this.lights = lights;
+            _this.groups = groups
+            
             _this.hue.state = data;
+            
+            // _this.groups =
             console.log(_this.hue);
           }
         })

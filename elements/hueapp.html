@@ -8,6 +8,7 @@
 
   <link rel="import" href="./hueinterface.html">
   <link rel="import" href="./huelight.html">
+  <link rel="import" href="./huegroup.html">
 
 <dom-module id="hue-app">
 
@@ -19,12 +20,21 @@
     </style>
   
     <!-- local DOM for your element -->
-    <hue-interface ip="192.168.0.100" lights="{{lights}}"></hue-interface>
+    <hue-interface ip="192.168.0.100" lights="{{lights}}" groups="{{groups}}"></hue-interface>
     <paper-card elevation="1" heading="Light selection">
       <div class="card-content">
         <section class="layout horizontal wrap">
           <template is="dom-repeat" items="{{lights}}">
             <hue-light light-id="{{item.id}}" model-id="{{item.modelId}}">
+          </template>
+        </section>
+      </div>
+    </paper-card>
+    <paper-card elevation="1" heading="Groups">
+      <div class="card-content">
+        <section class="layout horizontal wrap">
+          <template is="dom-repeat" items="{{groups}}">
+            <hue-group group-id="{{item.id}}" name="{{item.name}}" lights="{{item.lights}}">
           </template>
         </section>
       </div>
@@ -63,6 +73,10 @@
         lights: {
           type: Array,
           notify: true
+        },
+        groups:{
+          type: Array,
+          notify: true
         }
       },
       listeners:{
@@ -71,7 +85,7 @@
       handleBlink: function(e){
         //got a click
         var storage = document.querySelector('hue-interface');
-        if (e.detail.type = "light"){
+        if (e.detail.type == "light"){
           storage.blinkLight(e.detail.id);
         } else {
           storage.blinkGroup(e.detail.id);

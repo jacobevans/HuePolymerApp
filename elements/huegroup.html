@@ -25,7 +25,6 @@
     <!-- local DOM for your element -->
     <p><span>{{name}}</span></p>
   </template>
-qQwWeE
   <script>
 
     // element registration
@@ -55,34 +54,6 @@ qQwWeE
       ready: function(){
 
       },
-      lightAttributes:{
-        "LLC011": {
-          name: "Bloom",
-          icon: "lc_bloom"
-        },
-        "LLC020": {
-          name: "Go",
-          icon: "huego"
-        },
-        "LLC010": {
-          name: "Iris",
-          icon: "lc_iris"
-        },
-        "LCT001": {
-          name: "A19",
-          icon: "a19"
-        },
-        "LST001": {
-          name: "Lightstrip",
-          icon: "lightstrip"
-        }
-      },
-      computeTypeName: function(modelId, lightId){
-        return ""+ this.lightId +" - "+ this.lightAttributes[modelId].name;
-      },
-      computeIconUrl: function(modelId){
-        return ("../assets/hue_icons/"+ this.lightAttributes[modelId].icon +"_outline.svg");
-      }
     });
     
   </script>
