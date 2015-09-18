@@ -42,21 +42,7 @@
         },
         lights: {
           type: Array,
-          value: [
-          {
-            id:1,
-            modelId: "LLC011",
-          },
-          {
-            id:2,
-            modelId: "LLC010",
-          },
-          {
-            id:3,
-            modelId: "LLC020",
-          }
-        ],
-        notify: true
+          notify: true
           // computed: "computeLights(hue)"
         }
       },
@@ -87,13 +73,32 @@
         ]
         return lights;
       },
+      blinkLight: function(id){
+        $.ajax({
+          url: this._baseURL() + "/lights/" + id + "/state",
+          type: "PUT",
+          data: JSON.stringify({
+            alert: "select"
+          })
+        });
+      },
+      _baseURL: function(){
+        return "http://"+ this.ip +"/api/"+ this.username;
+      },
       _getState: function(){
         var _this = this;
         $.ajax({
-          url: "http://"+ this.ip +"/api/"+ this.username,
+          url: this._baseURL(),
           type: "GET",
           success: function(data){
-            debugger
+            lights = _.map(_.pairs(data.lights),function(pair){
+              return(
+                {
+                  id: pair[0], 
+                  modelId: pair[1].modelid
+                });
+            });
+            _this.lights = lights;
             _this.hue.state = data;
             console.log(_this.hue);
           }

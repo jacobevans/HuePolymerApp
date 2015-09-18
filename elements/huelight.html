@@ -6,6 +6,13 @@
 
   <template>
     <style>
+      :host{
+        border: 2px solid #000;
+        border-radius:10px;
+        text-align: center;
+        margin: 8px;
+        padding: 0 8px 8px 8px;
+      }
       .border-icon {
         display: inline-block;
 /*        background-color: #ccc;*/
@@ -38,12 +45,19 @@
         },
         typeName: {
           type: String,
-          computed: 'computeTypeName(modelId)'
+          computed: 'computeTypeName(modelId, lightId)'
         },
         iconPath: {
           type: String,
           computed: 'computeIconUrl(modelId)'
         }
+      },
+      listeners:{
+        'click': 'handleClick'
+      },
+      handleClick: function(e){
+        //got a click
+        this.fire('blinkLight', { id: this.lightId });
       },
       ready: function(){
 
@@ -70,8 +84,8 @@
           icon: "lightstrip"
         }
       },
-      computeTypeName: function(modelId){
-        return this.lightAttributes[modelId].name;
+      computeTypeName: function(modelId, lightId){
+        return ""+ this.lightId +" - "+ this.lightAttributes[modelId].name;
       },
       computeIconUrl: function(modelId){
         return ("../assets/hue_icons/"+ this.lightAttributes[modelId].icon +"_outline.svg");
