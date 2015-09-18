@@ -1,0 +1,90 @@
+<script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+<link rel="import" href="../bower_components/jquery/dist/jquery.js">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="hue-group">
+
+  <template>
+    <style>
+      :host{
+        border: 2px solid #000;
+        border-radius:10px;
+        text-align: center;
+        margin: 8px;
+        padding: 0 8px 8px 8px;
+      }
+      .border-icon {
+        display: inline-block;
+/*        background-color: #ccc;*/
+        border-radius: 8px;
+        padding: 4px;
+        border:2px solid #222;
+      }
+    </style>
+  
+    <!-- local DOM for your element -->
+    <p><span>{{name}}</span></p>
+  </template>
+qQwWeE
+  <script>
+
+    // element registration
+    Polymer({
+      is: "hue-group",
+
+
+      properties: {
+        groupId: {
+          type: Number
+        },
+        lightIds: {
+          type: Array,
+        },
+        name: {
+          type: String,
+          value: 'Unnamed Group'
+        }
+      },
+      listeners:{
+        'click': 'handleClick'
+      },
+      handleClick: function(e){
+        //got a click
+        this.fire('blink', { type: "group", id: this.groupId });
+      },
+      ready: function(){
+
+      },
+      lightAttributes:{
+        "LLC011": {
+          name: "Bloom",
+          icon: "lc_bloom"
+        },
+        "LLC020": {
+          name: "Go",
+          icon: "huego"
+        },
+        "LLC010": {
+          name: "Iris",
+          icon: "lc_iris"
+        },
+        "LCT001": {
+          name: "A19",
+          icon: "a19"
+        },
+        "LST001": {
+          name: "Lightstrip",
+          icon: "lightstrip"
+        }
+      },
+      computeTypeName: function(modelId, lightId){
+        return ""+ this.lightId +" - "+ this.lightAttributes[modelId].name;
+      },
+      computeIconUrl: function(modelId){
+        return ("../assets/hue_icons/"+ this.lightAttributes[modelId].icon +"_outline.svg");
+      }
+    });
+    
+  </script>
+
+</dom-module>

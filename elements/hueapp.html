@@ -66,14 +66,16 @@
         }
       },
       listeners:{
-        'blinkLight': 'handleBlinkLight'
+        'blink': 'handleBlink'
       },
-      handleBlinkLight: function(e){
+      handleBlink: function(e){
         //got a click
-        console.log("CLICKED");
-        console.log(e);
         var storage = document.querySelector('hue-interface');
-        storage.blinkLight(e.detail.id);
+        if (e.detail.type = "light"){
+          storage.blinkLight(e.detail.id);
+        } else {
+          storage.blinkGroup(e.detail.id);
+        }
         // this.fire('blinkLight', { id: this.lightId });
       },
       ready: function(){

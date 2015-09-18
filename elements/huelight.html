@@ -57,7 +57,7 @@
       },
       handleClick: function(e){
         //got a click
-        this.fire('blinkLight', { id: this.lightId });
+        this.fire('blink', { type: 'light', id: this.lightId });
       },
       ready: function(){
 

@@ -82,6 +82,15 @@
           })
         });
       },
+      blinkGroup: function(id){
+        $.ajax({
+          url: this._baseURL() + "/groups/" + id + "/action",
+          type: "PUT",
+          data: JSON.stringify({
+            alert: "select"
+          })
+        });
+      },
       _baseURL: function(){
         return "http://"+ this.ip +"/api/"+ this.username;
       },
