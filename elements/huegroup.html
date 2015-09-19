@@ -1,17 +1,28 @@
 <script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
 <link rel="import" href="../bower_components/jquery/dist/jquery.js">
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/editor-icons.html">
 
 <dom-module id="hue-group">
 
   <template>
     <style>
-      :host{
+/*      :host{
         border: 2px solid #000;
         border-radius:10px;
         text-align: center;
         margin: 8px;
         padding: 0 8px 8px 8px;
+      }*/
+    
+      paper-button{
+        background-color: rgba(66, 133, 244, 0.25);
+      }
+      paper-button[active]{
+        background-color: #4285f4;
       }
       .border-icon {
         display: inline-block;
@@ -23,7 +34,14 @@
     </style>
   
     <!-- local DOM for your element -->
-    <p><span>{{name}}</span></p>
+    <!-- <p><span>{{name}}</span></p> -->
+    <paper-button class="colorful">
+      <p><span>{{name}}</span></p>
+      <content></content>
+      <paper-fab mini icon="editor:mode-edit" on-click="editGroup">></paper-fab>
+      <!-- <paper-fab mini icon="editor:mode-edit"></paper-fab> -->
+      
+    </paper-button>
   </template>
   <script>
 
@@ -42,18 +60,39 @@
         name: {
           type: String,
           value: 'Unnamed Group'
+        },
+        active: {
+          type: Boolean,
+          value: false
         }
       },
       listeners:{
         'click': 'handleClick'
       },
+      observers: [
+        'activeChanged(active)'
+      ],
       handleClick: function(e){
         //got a click
         this.fire('blink', { type: "group", id: this.groupId });
       },
+      activeChanged: function(is_active){
+        full_button = this.querySelector('paper-button');
+        full_button.active = is_active;
+        // if (is_active){
+        //   full_button
+        // } else {
+        //   full_button
+        // }
+      },
       ready: function(){
 
       },
+      editGroup: function(e){
+        this.active = !this.active;
+        event.stopPropagation()
+        return false;
+      }
     });
     
   </script>
