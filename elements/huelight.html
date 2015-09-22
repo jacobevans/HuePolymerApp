@@ -25,10 +25,31 @@
         padding: 4px;
         border:2px solid #222;
       }
+      iron-icon{
+        background-color:#fff;
+      }
+      paper-button{
+        border: 2px solid #000;
+        border-radius:10px;
+        background-color: #DDD;
+      }
+      paper-button[active]{
+        background-color: #4285f4;
+      }
+      paper-fab.light-add {
+        --paper-fab-background: var(--paper-green-500);
+        --paper-fab-keyboard-focus-background: var(--paper-green-900);
+      }
+      paper-fab.light-remove {
+        --paper-fab-background: var(--paper-red-500);
+        --paper-fab-keyboard-focus-background: var(--paper-red-900);
+      }
     </style>
   
     <!-- local DOM for your element -->
-    <paper-button>
+    <paper-button >
+      <paper-fab class="light-fab light-remove" mini icon="remove" on-click="addOrRemoveLight">></paper-fab>
+    
       <p>Hue <span>{{typeName}}</span></p>
       <iron-icon class="border-icon" src="{{iconPath}}"></iron-icon>
     </paper-button>

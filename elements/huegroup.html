@@ -24,6 +24,14 @@
       paper-button[active]{
         background-color: #4285f4;
       }
+      paper-fab{
+        --paper-fab-background: var(--paper-blue-500);
+        --paper-fab-keyboard-focus-background: var(--paper-blue-900);
+      }
+      paper-fab.editing{
+        /*--paper-fab-*/background: var(--paper-green-500);
+/*        --paper-fab-keyboard-focus-background: var(--paper-green-900);*/
+      }
       .border-icon {
         display: inline-block;
 /*        background-color: #ccc;*/
@@ -35,7 +43,7 @@
   
     <!-- local DOM for your element -->
     <!-- <p><span>{{name}}</span></p> -->
-    <paper-button class="colorful">
+    <paper-button>
       <p><span>{{name}}</span></p>
       <content></content>
       <paper-fab mini icon="editor:mode-edit" on-click="editGroup">></paper-fab>
@@ -52,7 +60,8 @@
 
       properties: {
         groupId: {
-          type: Number
+          type: Number,
+          notify: true
         },
         lightIds: {
           type: Array,
@@ -63,7 +72,8 @@
         },
         active: {
           type: Boolean,
-          value: false
+          value: false,
+          notify: true
         }
       },
       listeners:{
@@ -78,12 +88,15 @@
       },
       activeChanged: function(is_active){
         full_button = this.querySelector('paper-button');
+        fab = full_button.querySelector('paper-fab');
         full_button.active = is_active;
-        // if (is_active){
-        //   full_button
-        // } else {
-        //   full_button
-        // }
+        if (is_active){
+          fab.icon = "done";
+          fab.toggleClass('editing', true);
+        } else {
+          fab.icon = "editor:mode-edit";
+          fab.toggleClass('editing', false); 
+        }
       },
       ready: function(){
 
