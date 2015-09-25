@@ -33,22 +33,35 @@
         border-radius:10px;
         background-color: #DDD;
       }
+      
       paper-button[active]{
         background-color: #4285f4;
       }
-      paper-fab.light-add {
-        --paper-fab-background: var(--paper-green-500);
-        --paper-fab-keyboard-focus-background: var(--paper-green-900);
+      
+      paper-fab[editing-enabled="true"]{
+        display: block;
+      }      
+      paper-fab[editing-enabled="false"]{
+        display: none;
       }
-      paper-fab.light-remove {
-        --paper-fab-background: var(--paper-red-500);
-        --paper-fab-keyboard-focus-background: var(--paper-red-900);
+      
+      paper-fab {
+        background: #4caf50;
+/*        --paper-fab-background: var(--paper-green-500);
+        --paper-fab-keyboard-focus-background: var(--paper-green-900);*/          
+      }
+      paper-fab.remove {
+        background: #f44336;
+
+/*        --paper-fab-background: var(--paper-red-500);
+        --paper-fab-keyboard-focus-background: var(--paper-red-900);*/
       }
     </style>
   
     <!-- local DOM for your element -->
     <paper-button >
-      <paper-fab class="light-fab light-remove" mini icon="remove" on-click="addOrRemoveLight">></paper-fab>
+      <paper-fab mini icon$="{{icon}}" hidden="{{editingDisabled}}" on-click="addOrRemoveLightFromGroup"></paper-fab>
+      <!-- <paper-fab class="remove" hidden></paper-fab> --> <!-- didnt work --> 
     
       <p>Hue <span>{{typeName}}</span></p>
       <iron-icon class="border-icon" src="{{iconPath}}"></iron-icon>
@@ -78,11 +91,50 @@
         iconPath: {
           type: String,
           computed: 'computeIconUrl(modelId)'
+        },
+        editingGroup: {
+          type: Object,
+          notify: true
+        },
+        editingEnabled: {
+          type: Boolean,
+          notify: true
+        },
+        editingDisabled: {
+          type: Boolean,
+          computed: "flipEditingEnabled(editingEnabled)",
+          notify: true
+        },
+        editingChanges:{//crappy way to force update of "presentInEditingGroup"..couldn't get any real observers working
+          type:Number,
+          value:0
+        },
+        presentInEditingGroup: {
+          type: Boolean,
+          computed: "computePresentInEditingGroup(editingGroup, editingChanges)",//" editingGroup.lights.lightCount)",
+          notify: true
+        },
+        icon: {
+          type: String,
+          value: "add",
+          computed: "computeBadgeIcon(presentInEditingGroup)"
         }
       },
       listeners:{
-        'click': 'handleClick'
+        'click': 'handleClick',    
       },
+      addOrRemoveLightFromGroup: function(e){
+        this.fire('addOrRemoveLightFromGroup', {source: this})
+        event.stopPropagation()
+      },
+      // logEditingGroup: function(grp){
+      //   console.log("CHANGED EDITING GROUP:");
+      //   console.log(grp);
+      //   console.log(this.editingGroup);
+      // },
+      observers:[
+        'changePresentInEditingGroup(presentInEditingGroup)'
+      ],
       handleClick: function(e){
         //got a click
         this.fire('blink', { type: 'light', id: this.lightId });
@@ -112,11 +164,33 @@
           icon: "lightstrip"
         }
       },
+      flipEditingEnabled: function(enabled){
+        return !enabled;
+      },
       computeTypeName: function(modelId, lightId){
         return ""+ this.lightId +" - "+ this.lightAttributes[modelId].name;
       },
       computeIconUrl: function(modelId){
         return ("../assets/hue_icons/"+ this.lightAttributes[modelId].icon +"_outline.svg");
+      },
+      computePresentInEditingGroup: function(grp,splices){
+        console.log('computing present in editing group');
+        if (_.indexOf(grp.lights, this.lightId) > -1){
+          return true;
+        } else {
+          return false;
+        }
+      },
+      changePresentInEditingGroup: function(isPresent){
+        var fab = this.querySelector('paper-fab');
+        fab.toggleClass('remove',isPresent);
+      },
+      computeBadgeIcon: function(isPresent){
+        if (isPresent){
+          return "remove";
+        } else {
+          return "add";
+        }
       }
     });
     

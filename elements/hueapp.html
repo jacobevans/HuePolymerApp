@@ -31,7 +31,7 @@
       <div class="card-content">
         <section class="layout horizontal wrap">
           <template is="dom-repeat" items="{{lights}}">
-            <hue-light light-id="{{item.id}}" model-id="{{item.modelId}}"></hue-light>
+            <hue-light light-id="{{item.id}}" model-id="{{item.modelId}}" editing-enabled="{{isGroupEditing}}" editing-group="{{editingGroup}}"></hue-light>
           </template>
         </section>
       </div>
@@ -87,51 +87,62 @@
           type: Array,
           notify: true
         },
-        editingGroupId:{
-          type: Number,
+        editingGroup:{
+          type: Object,
           notify: true
+        },
+        lightsInEditingGroup:{
+          type: Array,
+          notify: true
+        },
+        isGroupEditing:{
+          type: Boolean,
+          notify: true,
+          computed: 'computeIsGroupEditing(groups.*)'
         }
       },
       listeners:{
-        'blink': 'handleBlink'
+        'blink': 'handleBlink',
+        'addOrRemoveLightFromGroup': 'addOrRemoveLightFromGroup'
       },
       observers: [
-        'editingGroupChanged(groups.*)'
+        'editingGroupChanged(groups.*)',
       ],
+      computeIsGroupEditing: function(change){
+        var activeItems = _.filter(change.base,function(item){
+          if(item.active == true){
+            return true;
+          } else {
+            return false
+          }
+        })
+        if (activeItems.length > 0){
+          return true;
+        } else {
+          return false;
+        }        
+      },
       editingGroupChanged: function(change){
-        console.log(change);
-        window._change = change;
         if (change.path.match(/groups\.[0-9+]\.active/) && change.value == true) { //only care about changes to active properties
           var otherGroups = document.querySelectorAll('hue-group');//change.base.slice();
           var thisGroupIndex = change.path.match(/groups\.([0-9+])\.active/)[1]
           var thisGroupId = change.base[thisGroupIndex].id;
 
-          console.log("PATH MATCHED");
-          console.log(change.path);
           
-          console.log("thisGroupIndex: "+thisGroupIndex);
-          console.log("thisGroupId: "+thisGroupId);
-          // otherGroups = _.filter(change.base, function(item){
-          //   if ("groups."+ item.id +".active" != change.path) {
-          //     return true;
-          //   } else {
-          //     return false;
-          //   }
-          // });
-          
-          // otherGroups.splice(change.path.match(/groups\.([0-9+])\.active/)[0],1);
-
+          var thisGroup;
+          //Deselect all other groups and save the correct group
           _.each(otherGroups,function(grp){
-            console.log("iterated groupID: " + grp.groupId)
             if (grp.groupId != thisGroupId){
               grp.active=false;
+            } else {
+              thisGroup = grp
             }
           });
-          // console.log(otherGroups);
-        }
+          this.editingGroup = thisGroup;
+          
+          //load correct lights
 
-        // debugger;
-        //  = _
+        }
       },
       handleBlink: function(e){
         //got a click
@@ -141,6 +152,12 @@
         } else {
           storage.blinkGroup(e.detail.id);
         }
+      },
+      addOrRemoveLightFromGroup: function(e){
+        var storage = document.querySelector('hue-interface');
+        var light = e.detail.source;
+        var group = this.editingGroup;
+        storage.addOrRemoveLightFromGroup(light,group);
       },
       ready: function(){
 

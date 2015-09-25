@@ -1,6 +1,8 @@
 <script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
 <link rel="import" href="../bower_components/jquery/dist/jquery.js">
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
 
 <dom-module id="hue-interface">
 
@@ -11,6 +13,7 @@
   
     <!-- local DOM for your element -->
     <span>{{connected}}</span>
+    <iron-ajax id="addOrRemoveLightFromGroup" ></iron-ajax>
   </template>
 
   <script>
@@ -42,12 +45,19 @@
         },
         lights: {
           type: Array,
-          notify: true
+          notify: true,
+          value: []
           // computed: "computeLights(hue)"
+        },
+        stateAjaxResponse:{
+          type: Object,
+          notify: true,
+          value: {}
         },
         groups: {
           type: Array,
-          notify: true
+          notify: true,
+          value: []
           // computed: "computeLights(hue)"
         }
       },
@@ -61,6 +71,9 @@
           this.connected = "Success connecting"
         }
       },
+      observers: [
+        'stateAjaxChanged(stateAjaxResponse)',
+      ],
       // computeLights: function(hue){
       //   lights = [
       //     {
@@ -96,6 +109,39 @@
           })
         });
       },
+      addOrRemoveLightFromGroup: function(light,group){
+        var light_id = light.lightId,
+          group_id = group.groupId,
+          lights_in_group = group.lights;// ,
+//           new_lights_in_group = lights_in_group;
+        
+        var index_of_light = _.indexOf(lights_in_group, light_id);
+        if (index_of_light > -1) {
+          if (lights_in_group.length > 1){
+            lights_in_group = _.without(lights_in_group, light_id);
+          } else {
+            displayAlert("You can't remove the last light from a group.");
+          }
+        } else {
+          lights_in_group.push(light_id);
+        }
+        var _this = this;
+        $.ajax({
+          url: this._baseURL() + "/groups/" + group_id,
+          type: "PUT",
+          data: JSON.stringify({lights: lights_in_group})
+        }).then(function(data){
+          // if (Object.keys(data[0])[0] != "error"){
+            light.editingChanges = light.editingChanges + 1;
+            // if (index_of_light > -1) {
+            //   lights_in_group = lights_in_group.splice(index_of_light, 1);//_.without(lights_in_group, light_id);
+            // } else {
+            //   lights_in_group.push(light_id);
+            // }
+          // }
+        });
+        group.lights = lights_in_group; //mutate actual array
+      },
       _baseURL: function(){
         return "http://"+ this.ip +"/api/"+ this.username;
       },
@@ -119,7 +165,14 @@
                 name: pair[1].name
               });
             });
-            _this.lights = lights;
+            // _this.lights = lights;
+            _this.stateAjaxResponse = {
+              lights: lights,
+              groups: groups//,
+              // lastReceived: Math.floor(Date.now() / 1000)
+            }
+            // this = _this
+            // _
             _this.groups = groups
             
             _this.hue.state = data;
@@ -129,6 +182,25 @@
           }
         })
         return true;
+      },
+      stateAjaxChanged: function(stateAjaxResponse){
+        // debugger;
+        // _.each(stateAjaxResponse.lights, function(light){
+        //   this.push('lights', light);
+        // });
+        console.log("in changed");
+        if (typeof stateAjaxResponse.lights != 'undefined' && stateAjaxResponse.lights.length > 0){
+          console.log("more in changed");
+          length = stateAjaxResponse.lights.length;
+          for (var i=0; i< length; i++){
+
+            this.push('lights', stateAjaxResponse.lights[i]);
+          }
+        }
+                  console.log();
+        
+        // this.lights = [1];
+        // this.splice.apply('lights', [0,0].concat(lights)); //use polymer splsice to splice in new vals
       }
     });
     
