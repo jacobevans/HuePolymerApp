@@ -165,14 +165,12 @@
                 name: pair[1].name
               });
             });
-            // _this.lights = lights;
-            _this.stateAjaxResponse = {
-              lights: lights,
-              groups: groups//,
-              // lastReceived: Math.floor(Date.now() / 1000)
-            }
-            // this = _this
-            // _
+            _this.lights = lights;
+            // _this.stateAjaxResponse = {
+            //   lights: lights,
+            //   groups: groups//,
+            //   // lastReceived: Math.floor(Date.now() / 1000)
+            // }
             _this.groups = groups
             
             _this.hue.state = data;
