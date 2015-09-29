@@ -8,6 +8,8 @@
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+
 
 
 
@@ -27,8 +29,36 @@
         top: -56px;
         left: -29px;
       }
+      paper-menu {
+        display: block;
+        --paper-dropdown-menu-icon: add;
+      }
+      paper-dropdown-menu {
+        text-align: left;
+        margin: auto;
+        width: 180px;
+      }
+      paper-dropdown-menu.letters {
+        width: 90px;
+      }
+      paper-tabs {
+        width: 400px;
+      }
+      .horizontal-section {
+        text-align: center;
+      }
+      
     </style>
-  
+  <div class="horizontal-section">
+            <paper-dropdown-menu icon="add">
+              <paper-tabs class="dropdown-content">
+                  <paper-button>edit</paper-button>
+                  <paper-button>delete</paper-button>
+                  <paper-button>activate</paper-button>
+                  
+              </paper-tabs>
+            </paper-dropdown-menu>
+          </div>
     <!-- local DOM for your element -->
     <hue-interface ip="192.168.0.100" lights="{{lights}}" groups="{{groups}}" scenes="{{scenes}}"></hue-interface>
     <paper-card elevation="1" heading="Light selection">

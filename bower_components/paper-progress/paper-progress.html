@@ -108,7 +108,8 @@ Custom property                             | Description                       
       background-color: var(--paper-progress-container-color, --google-grey-300);
     }
 
-    :host(.transiting) > * {
+    :host(.transiting) #primaryProgress,
+    :host(.transiting) #secondaryProgress {
       -webkit-transition-property: -webkit-transform;
       transition-property: transform;
 
@@ -330,7 +331,7 @@ Custom property                             | Description                       
     },
 
     _disabledChanged: function(disabled) {
-      this.$.progressContainer.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+      this.setAttribute('aria-disabled', disabled ? 'true' : 'false');
     },
 
     _hideSecondaryProgress: function(secondaryRatio) {
