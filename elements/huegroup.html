@@ -87,22 +87,17 @@
         'click': 'handleClick'
       },
       observers: [
-        'activeChanged(active)',
-        'countLights2(lightIds.splices)'
+        'activeChanged(active)'
       ],
-      countLights2: function(splices){
-        console.log("IN NUMBA 2 ..splices:");
-        console.log(splices);
-      },
-      countLights: function(s,a,p){
-        console.log("in first part of countLights...");
-        debugger;
-        if (typeof s != 'undefined'){
-          console.log("IN COUNT LIGHTS. s:");
-          console.log(s);
-          return 0;//this.lights.length;
-        }
-      },
+      // countLights: function(s,a,p){
+      //   console.log("in first part of countLights...");
+      //   debugger;
+      //   if (typeof s != 'undefined'){
+      //     console.log("IN COUNT LIGHTS. s:");
+      //     console.log(s);
+      //     return 0;//this.lights.length;
+      //   }
+      // },
       handleClick: function(e){
         //got a click
         this.fire('blink', { type: "group", id: this.groupId });

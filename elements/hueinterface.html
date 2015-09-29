@@ -49,11 +49,11 @@
           value: []
           // computed: "computeLights(hue)"
         },
-        stateAjaxResponse:{
-          type: Object,
-          notify: true,
-          value: {}
-        },
+        // stateAjaxResponse:{
+        //   type: Object,
+        //   notify: true,
+        //   value: {}
+        // },
         groups: {
           type: Array,
           notify: true,
@@ -72,7 +72,7 @@
         }
       },
       observers: [
-        'stateAjaxChanged(stateAjaxResponse)',
+        // 'stateAjaxChanged(stateAjaxResponse)',
       ],
       // computeLights: function(hue){
       //   lights = [
@@ -180,26 +180,24 @@
           }
         })
         return true;
-      },
-      stateAjaxChanged: function(stateAjaxResponse){
-        // debugger;
-        // _.each(stateAjaxResponse.lights, function(light){
-        //   this.push('lights', light);
-        // });
-        console.log("in changed");
-        if (typeof stateAjaxResponse.lights != 'undefined' && stateAjaxResponse.lights.length > 0){
-          console.log("more in changed");
-          length = stateAjaxResponse.lights.length;
-          for (var i=0; i< length; i++){
-
-            this.push('lights', stateAjaxResponse.lights[i]);
-          }
-        }
-                  console.log();
-        
-        // this.lights = [1];
-        // this.splice.apply('lights', [0,0].concat(lights)); //use polymer splsice to splice in new vals
-      }
+      }// ,
+//       stateAjaxChanged: function(stateAjaxResponse){
+//         // debugger;
+//         // _.each(stateAjaxResponse.lights, function(light){
+//         //   this.push('lights', light);
+//         // });
+//         console.log("in changed");
+//         if (typeof stateAjaxResponse.lights != 'undefined' && stateAjaxResponse.lights.length > 0){
+//           console.log("more in changed");
+//           length = stateAjaxResponse.lights.length;
+//           for (var i=0; i< length; i++){
+//
+//             this.push('lights', stateAjaxResponse.lights[i]);
+//           }
+//         }
+//         // this.lights = [1];
+//         // this.splice.apply('lights', [0,0].concat(lights)); //use polymer splsice to splice in new vals
+//       }
     });
     
     

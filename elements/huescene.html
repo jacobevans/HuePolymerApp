@@ -1,0 +1,61 @@
+<script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+<link rel="import" href="../bower_components/jquery/dist/jquery.js">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="hue-scene">
+
+  <template>
+    <style>
+      :host{
+        border: 2px solid #000;
+        border-radius:10px;
+        text-align: center;
+        margin: 8px;
+        padding: 0 8px 8px 8px;
+      }
+      .border-icon {
+        display: inline-block;
+/*        background-color: #ccc;*/
+        border-radius: 8px;
+        padding: 4px;
+        border:2px solid #222;
+      }
+    </style>
+  
+    <!-- local DOM for your element -->
+    <p><span>{{name}}</span></p>
+  </template>
+  <script>
+
+    // element registration
+    Polymer({
+      is: "hue-scene",
+      properties: {
+        sceneId: {
+          type: Number
+        },
+        groups: {
+          type: Array,
+        },
+        name: {
+          type: String,
+          value: 'Unnamed Scene',
+          notify: true
+        }
+      },
+      listeners:{
+        'click': 'handleClick'
+      },
+      handleClick: function(e){
+        //got a click
+        // console.log("GOT A CLICK");
+        // this.fire('activateScene', {lights: this.lights});
+      },
+      ready: function(){
+        console.log("am scene");
+      }
+    });
+    
+  </script>
+
+</dom-module>
