@@ -8,8 +8,6 @@
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
-<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-
 
 
 
@@ -17,6 +15,8 @@
   <link rel="import" href="./huelight.html">
   <link rel="import" href="./huegroup.html">
   <link rel="import" href="./huescene.html">
+  
+  <link rel="import" href="./chromestorage.html">
 
 <dom-module id="hue-app">
 
@@ -29,38 +29,14 @@
         top: -56px;
         left: -29px;
       }
-      paper-menu {
-        display: block;
-        --paper-dropdown-menu-icon: add;
-      }
-      paper-dropdown-menu {
-        text-align: left;
-        margin: auto;
-        width: 180px;
-      }
-      paper-dropdown-menu.letters {
-        width: 90px;
-      }
-      paper-tabs {
-        width: 400px;
-      }
-      .horizontal-section {
-        text-align: center;
-      }
+
       
     </style>
-  <div class="horizontal-section">
-            <paper-dropdown-menu icon="add">
-              <paper-tabs class="dropdown-content">
-                  <paper-button>edit</paper-button>
-                  <paper-button>delete</paper-button>
-                  <paper-button>activate</paper-button>
-                  
-              </paper-tabs>
-            </paper-dropdown-menu>
-          </div>
     <!-- local DOM for your element -->
     <hue-interface ip="192.168.0.100" lights="{{lights}}" groups="{{groups}}" scenes="{{scenes}}"></hue-interface>
+    
+    <chrome-storage key="hueconfig" data="{{dataStorage}}"></chrome-storage>
+    
     <paper-card elevation="1" heading="Light selection">
       <div class="card-content">
         <section class="layout horizontal wrap">
@@ -83,7 +59,7 @@
       </div>
     </paper-card>
     <br>
-    <paper-card elevation="1" heading="Scenes">
+    <paper-card id="scenes" elevation="1" heading="Scenes">
       <div class="card-content">
         <paper-fab mini id="add-scene" icon="add" on-click="addScene"></paper-fab>
         <section class="layout horizontal wrap">
@@ -120,7 +96,7 @@
         },
         scenes:{
           type: Array,
-          value: [],
+          value: function(){return []},
           notify: true
         },
         editingGroup:{
@@ -135,18 +111,44 @@
           type: Boolean,
           notify: true,
           computed: 'computeIsGroupEditing(groups.*)'
+        },
+        dataStorage:{
+          type: Object,
+          notify: true,
+          computed: "computeStorageData(scenes, scenes.*)"
         }
       },
       listeners:{
         'blink': 'handleBlink',
-        'addOrRemoveLightFromGroup': 'addOrRemoveLightFromGroup'
+        'addOrRemoveLightFromGroup': 'addOrRemoveLightFromGroup',
+        'chrome-storage-loaded-data': 'storageLoaded',
+        'delete-scene': 'deleteScene'
       },
       observers: [
         'editingGroupChanged(groups.*)',
       ],
+      deleteScene: function(e){
+        var scenes = this.querySelectorAll('hue-scene');
+        var scene = e.detail.scene;
+        var index_to_remove = _.indexOf(scenes, scene);
+        console.log("removing at index: "+index_to_remove);
+        this.splice("scenes", index_to_remove, 1);
+      },
+      storageLoaded: function(e){
+        console.log("storage loaded in hueapp");
+        this.scenes = e.detail.data.scenes;
+      },
       addScene: function(e){
         // debugger
         this.push('scenes', {name: "je"});
+      },
+      computeStorageData: function(scenes, scenestar){
+        if (typeof scenes != undefined && scenes.constructor === Array && scenes.length>0){
+          data = {scenes: scenes};
+          console.log("computed storage data:")
+          console.log(data);
+          return data;
+        }
       },
       computeIsGroupEditing: function(change){
         var activeItems = _.filter(change.base,function(item){

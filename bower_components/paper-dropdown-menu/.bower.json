@@ -27,7 +27,8 @@
     "paper-input": "polymerelements/paper-input#^1.0.9",
     "paper-menu-button": "polymerelements/paper-menu-button#^1.0.0",
     "paper-ripple": "polymerelements/paper-ripple#^1.0.0",
-    "paper-styles": "polymerelements/paper-styles#^1.0.0"
+    "paper-styles": "polymerelements/paper-styles#^1.0.0",
+    "paper-fab": "polymerelements/paper-fab#^1.0.0"
   },
   "devDependencies": {
     "iron-component-page": "polymerelements/iron-component-page#^1.0.0",
@@ -39,13 +40,13 @@
     "web-component-tester": "*",
     "paper-tabs": "polymerelements/paper-tabs#^1.0.0"
   },
-  "_release": "a60db4b8b1",
+  "_release": "8dc0bcd053",
   "_resolution": {
     "type": "branch",
-    "branch": "custom-icon",
-    "commit": "a60db4b8b15f58324e220b67da0aefed21ac7744"
+    "branch": "fab-activate",
+    "commit": "8dc0bcd0530ba0844b5e07b1cff03d7f8cc116e9"
   },
   "_source": "https://github.com/jacobevans/paper-dropdown-menu.git",
-  "_target": "custom-icon",
+  "_target": "fab-activate",
   "_originalSource": "https://github.com/jacobevans/paper-dropdown-menu.git"
 }

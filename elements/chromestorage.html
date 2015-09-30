@@ -1,0 +1,100 @@
+<script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+<link rel="import" href="../bower_components/jquery/dist/jquery.js">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+
+<dom-module id="chrome-storage">
+
+  <template>
+
+  </template>
+  <script>
+
+    // element registration
+    Polymer({
+      is: "chrome-storage",
+      properties: {
+        key: {
+          type: String,
+          notify: true,
+          value: "default"
+        },
+        data: {
+          type: Object,
+          notify: true// ,
+//           value: function() { return {}; }
+        },
+        noAutosave: {
+          type: Boolean,
+          value: false
+        },
+        initialLoadDone:{
+          type: Boolean,
+          value: false,
+          notify: true
+        } 
+        
+        // ,
+//         internalStorageResponse:{
+//           type: Object,
+//           notify: true
+//         }
+      },
+      observers: [
+        "dataChangeObserver(data)",
+        "dataChangeObserver2(data.*)",
+        "dataChangeObserver3(data.splices)",
+        "keyChanged(key)"
+      ],
+      dataChangeObserver: function(data,datastar,datasplices){
+        this.dataChanged();
+      },
+      dataChangeObserver2: function(datastar){
+        this.dataChanged();
+      },
+      dataChangeObserver3: function(datasplices){
+        this.dataChanged();
+      },
+      dataChanged: function(){
+        if (!this.noAutosave  && this.initialLoadDone && typeof data != undefined){
+          console.log("data changed, gonna save:");
+          // console.log(this.data)
+          this.debounce('saveOnChange',function(){
+            this.save();
+          }, 300);
+        }
+      },
+      keyChanged: function(key){
+        this.load(key);
+      },
+      save: function(){
+        var savedata = (new Object);
+        savedata[this.key] = this.data;
+        console.log("--SAVING DATA:");
+        console.log(savedata);
+        chrome.storage.local.set(savedata);
+      },
+      load: function(){
+        var _this = this;
+        var key = this.key;
+        chrome.storage.local.get(null, function(data){
+          console.log("load function in chromestorage: (key is "+ key +")");
+          console.log(data);
+          loaded_data = data[key]; 
+          console.log(loaded_data);
+          
+          _this.data = loaded_data; 
+          _this.initialLoadDone = true;
+          _this.fire('chrome-storage-loaded-data', {data: loaded_data});
+
+
+        });
+      },
+      ready: function(){
+        this.load();
+      }
+    });
+    
+  </script>
+
+</dom-module>

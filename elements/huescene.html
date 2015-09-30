@@ -1,18 +1,23 @@
 <script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
 <link rel="import" href="../bower_components/jquery/dist/jquery.js">
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+
+
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/editor-icons.html">
+
+
 
 <dom-module id="hue-scene">
 
   <template>
     <style>
-      :host{
-        border: 2px solid #000;
-        border-radius:10px;
-        text-align: center;
-        margin: 8px;
-        padding: 0 8px 8px 8px;
-      }
       .border-icon {
         display: inline-block;
 /*        background-color: #ccc;*/
@@ -20,10 +25,84 @@
         padding: 4px;
         border:2px solid #222;
       }
+      :host ::content paper-fab{
+        background: var(--paper-blue-500);
+/*        --paper-fab-keyboard-focus-background: var(--paper-blue-900);*/
+        width:2px;
+        height:2px;
+      }
+      
+      paper-menu {
+        display: block;
+      }
+      paper-dropdown-menu {
+        text-align: left;
+        margin: auto;
+        right: 30px;
+        bottom: 12px;
+/*        width: 180px;*/
+      }
+      paper-dropdown-menu.letters {
+/*        width: 90px;*/
+      }
+      paper-tabs {
+/*        width: 400px;*/
+      }
+      .horizontal-section {
+        text-align: center;
+      }
+      
+      paper-button{
+        background-color: rgba(66, 133, 244, 0.25);
+      }
+      paper-button[active]{
+        background-color: #4285f4;
+      }
+      paper-input{
+        --paper-input-container-underline-disabled: {
+          display: none;
+        };
+        --paper-input-container-disabled: {
+          opacity: 1.0;
+          text-align: center;
+        };
+        --paper-input-container: {
+          opacity: 1.0;
+          text-align: center;
+        };
+        --paper-input-container-input: {
+          text-align: center;
+        }
+        --paper-input-container-input-color: #000;
+      }
+      
+      /*fix syntax highlighting*/
     </style>
   
     <!-- local DOM for your element -->
-    <p><span>{{name}}</span></p>
+
+    <paper-button>
+    
+      <paper-input on-blur="inputBlur" label="" on-keypress="nameKeyUp" on-enter="" disabled no-label-float maxlength="10" value="{{name}}"></paper-input>
+       
+    </paper-button>
+    <paper-dialog on-iron-overlay-closed="dialogClosed" class="deleteconfimation" modal>
+      <p>Are you sure you want to delete this scene?</p>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm autofocus>OK</paper-button>
+      </div>
+    </paper-dialog>
+    <paper-dropdown-menu icon="editor:mode-edit" noink no-animations>
+      <paper-menu class="dropdown-content">
+          <paper-item>edit</paper-item>
+          <paper-item on-click="deleteScene">delete</paper-item>
+          <paper-item on-click="renameScene">rename</paper-item>
+    
+    
+        </template>
+      </paper-menu>
+    </paper-dropdown-menu>
   </template>
   <script>
 
@@ -46,13 +125,45 @@
       listeners:{
         'click': 'handleClick'
       },
+      dialogClosed: function(e){
+        if (e.detail.confirmed){
+          console.log('delete confirmed');
+          this.fire("delete-scene", {scene: this});
+        }
+      },
+      nameKeyUp: function(e){
+        console.log("Keypress!");
+        if (e.keyCode == 13) {
+          console.log("keypress is ENTER@");
+          var input = this.querySelector('paper-input');
+          input.$.input.blur();
+          e.stopPropagation(); 
+          return false;
+        }
+      },
+      inputBlur: function(e){
+        var input = e.target;
+        input.disabled = true;
+      },
+      renameScene: function(e){
+        var input = this.querySelector('paper-input');
+        input.disabled = false;
+        input.$.input.focus();
+        this.querySelector("paper-dropdown-menu").close();
+      },
+      deleteScene: function(e){
+        var dialog = this.getElementsByClassName('deleteconfimation')[0];
+        if (dialog) {
+          dialog.open();
+        }
+      },
       handleClick: function(e){
         //got a click
         // console.log("GOT A CLICK");
         // this.fire('activateScene', {lights: this.lights});
       },
       ready: function(){
-        console.log("am scene");
+        var self = this;
       }
     });
     

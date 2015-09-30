@@ -19,7 +19,7 @@
     "paper-elements": "PolymerElements/paper-elements#^1.0.5",
     "polymer": "Polymer/polymer#^1.1.3",
     "underscore": "~1.8.3",
-    "paper-dropdown-menu": "https://github.com/jacobevans/paper-dropdown-menu.git#custom-icon"
+    "paper-dropdown-menu": "https://github.com/jacobevans/paper-dropdown-menu.git#fab-activate"
   },
   "resolutions": {
     "paper-dropdown-menu": "custom-icon"
