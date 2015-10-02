@@ -97,6 +97,7 @@
 					var onOff = off ? 'off' : 'on';
 
 					$(elm)[onOff]('focus.colorPicker', function(e) {
+            // console.log('s');
 						var $input = $(this),
 							position = $input.offset(),
 							index = multiple ? $(that).index(this) : 0,
@@ -128,6 +129,7 @@
 					});
 
 					$(window)[onOff]('mousedown.colorPicker', function(e) {
+            // console.log('mousedowncolorpicker');
 						var colorPicker = colorPickers.current,
 							$colorPicker = $(colorPicker ? colorPicker.nodes.colorPicker : undefined),
 							animationSpeed = colorPicker ? colorPicker.color.options.animationSpeed : 0,

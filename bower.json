@@ -14,6 +14,7 @@
     "tests"
   ],
   "dependencies": {
+    "color-picker-element": "~0.0.3",
     "iron-elements": "PolymerElements/iron-elements#^1.0.3",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#~1.0.3",
     "paper-dropdown-menu": "https://github.com/jacobevans/paper-dropdown-menu.git#fab-activate",

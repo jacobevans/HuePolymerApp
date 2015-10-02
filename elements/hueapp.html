@@ -31,6 +31,10 @@
         top: -56px;
         left: -29px;
       }
+      paper-fab#toggle-lights{
+        top: -56px;
+        left: -29px;
+      }
 
       
     </style>
@@ -41,7 +45,8 @@
     
     <paper-card elevation="1" heading="Light selection">
       <div class="card-content">
-        <section class="layout horizontal wrap">
+        <paper-fab mini id="toggle-lights" icon="icons:aspect-ratio" on-click="toggleLights"></paper-fab>
+        <section id="lights" class="layout horizontal wrap">
           <template is="dom-repeat" items="{{lights}}">
             <hue-light light-id="{{item.id}}" model-id="{{item.modelId}}" editing-enabled="{{isGroupEditing}}" editing-group="{{editingGroup}}"></hue-light>
           </template>
@@ -147,6 +152,10 @@
       observers: [
         'editingGroupChanged(groups.*)',
       ],
+      toggleLights: function(e){
+        var lightsEl = this.querySelector('#lights');
+        lightsEl.hidden = !lightsEl.hidden;
+      },
       closeSceneConfigure: function(e){
         this.set('editScene', null);
         var scenes = this.querySelectorAll('hue-scene');

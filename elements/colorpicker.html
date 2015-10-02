@@ -16,7 +16,8 @@
     </style>
   
     <!-- local DOM for your element -->
-    <input class="color"></input>
+    <input class="color" on-input="colorChanged" on-blur="colorBlur" value="{{colorVal::input}}"></input>
+    <span>{{colorVal}}</span>
   </template>
 
   <script>
@@ -31,10 +32,28 @@
         defaultColor: {
           type: String,
           value: "FF0000"
+        },
+        colorVal: {
+          type: String,
+          notify: true
+        },
+        picker: {
+          type: Object,
+          notify: true
         }
       },
+      colorChanged: function(e){
+        console.log("CHANGED!");
+        debugger;
+        console;
+      },
+      colorBlur: function(e){
+        console.log("HELLO");
+        console.log(e);
+        debugger;
+      },
       ready: function(){
-        $('input.color').colorPicker({
+        this.picker = $('input.color').colorPicker({
           color: this.defaultColor,
           mode: 'hsl-s',
           saturation: 1.0,

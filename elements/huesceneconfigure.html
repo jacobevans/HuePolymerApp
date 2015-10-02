@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/color-picker-element/dist/color-picker.html">
 
 
 <dom-module id="hue-scene-configure">
@@ -38,13 +39,18 @@
           <sortable-listb>
             <template is="dom-repeat" items="{{fullEditGroups}}" as="group" sort-can-remove="sortGroups">
               <paper-card elevation="3" heading="{{group.name}}">
-                <paper-fab class="move-left" mini icon="icons:chevron-left"  on-click="moveLeft"></paper-fab>
-                <paper-fab class="remove-group"  mini icon="remove" on-click="removeGroup"></paper-fab>
-                <paper-fab class="move-right"  mini icon="icons:chevron-right" on-click="moveRight"></paper-fab>
+                <div class="card-content">
+                  <paper-fab class="move-left" mini icon="icons:chevron-left"  on-click="moveLeft"></paper-fab>
+                  <paper-fab class="remove-group"  mini icon="remove" on-click="removeGroup"></paper-fab>
+                  <paper-fab class="move-right"  mini icon="icons:chevron-right" on-click="moveRight"></paper-fab>
               
-                <span>id: <span>{{group.id}}</span></span>
-                <span>index: <span>{{index}}</span></span>
-                
+                  <!-- <span>id: <span>{{group.id}}</span></span>
+                  <span>index: <span>{{index}}</span></span> -->
+                  <!-- <paper-card elevation="4"> -->
+                    <color-picker width="200" height="200" on-colorselected="colorSelected"></color-picker>
+                    <span>{{rgbColorAtIndex(group)}}</span>
+                  <!-- </paper-card> -->
+                </div>
               </paper-card>
             </template>
           </sortable-listb>
@@ -88,7 +94,23 @@
         }
       },
       listeners:{
-        'click': 'handleClick',    
+        // 'click': 'handleClick',
+      },
+      colorSelected: function(e){
+        var group_index = _.indexOf(this.fullEditGroups, e.model.group);
+        this.editScene.groups[group_index].config.rgb = e.detail;
+        this.editScene.groups[group_index].config.xy = window.getRGBtoXY(e.detail.rgb.r,e.detail.rgb.g, e.detail.rgb.b)
+        this.fire('update-scene', {scene: this});
+      },
+      rgbColorAtIndex: function(group){
+        console.log("IN RGB COLOR FUNC")
+        console.log(this);
+        console.log(group);
+        // if (typeof this.editScene.groups[index].config.rgb != 'undefined'){
+        //   return this.editScene.groups[index].config.rgb.hex;
+        // } else {
+        //   return "#jacob";
+        // }
       },
       // sortGroups: function(a,b){
       //   console.log('sortingroups');
@@ -100,6 +122,19 @@
       //     return -1;
       //   }
       // },
+      // handleColorSelected: function(e){
+      //   console.log('color selected!');
+      //   console.log(e);
+      //
+      // },
+      ready: function(){
+        // var cp = this.querySelector('color-picker');
+        // var _this = this;
+        // cp.addEventListener('colorselected', function(e) {
+        //   console.log('listener function');
+        //   _this.fire(colorselected, e.detail);
+        // });
+      },
       computeFullEditGroups: function(groupsstar){
         if (this.editScene == null){
           return new Array;
@@ -110,9 +145,9 @@
           var _this = this;
           var filtered_groups = _.map(this.editScene.groups,function(groupObj){
             return _.find(_this.parentNode.groups, function(gp){
-              console.log("testing if |"+ gp.id + "| is equal to |"+groupObj.groupId+"|");
+              // console.log("testing if |"+ gp.id + "| is equal to |"+groupObj.groupId+"|");
               if(gp.id == groupObj.groupId) {
-                console.log('return true');
+                // console.log('return true')  ;
                 return true;
               }
             });
@@ -137,9 +172,33 @@
             config: {
               bri: 200,
               xy: [0.1, 0.1],
-              on: true
+              on: true,
+              rgb: {
+                hex: "#0000ff",
+                rgb: {
+                  b: 255,
+                  g: 0,
+                  r: 0
+                }
+              }
             }
           });
+          this.fire('update-scene', {scene: this});
+        }
+      },
+      moveLeft: function(e){
+        var index_to_move = _.indexOf(this.fullEditGroups, e.model.group);
+        if (index_to_move > 0){
+          spliced = this.splice('editScene.groups', index_to_move, 1);
+          this.splice('editScene.groups', index_to_move-1, 0, spliced[0]);
+          this.fire('update-scene', {scene: this});
+        }
+      },
+      moveRight: function(e){
+        var index_to_move = _.indexOf(this.fullEditGroups, e.model.group);
+        if (index_to_move < (this.editScene.groups.length - 1)){
+          spliced = this.splice('editScene.groups', index_to_move, 1);
+          this.splice('editScene.groups', index_to_move+1, 0, spliced[0]);
           this.fire('update-scene', {scene: this});
         }
       },
