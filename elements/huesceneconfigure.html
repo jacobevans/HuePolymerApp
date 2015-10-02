@@ -1,0 +1,170 @@
+<script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+<link rel="import" href="../bower_components/jquery/dist/jquery.js">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+
+
+<dom-module id="hue-scene-configure">
+
+  <template>
+    <style>
+      paper-fab{
+        --paper-fab-background: var(--paper-red-500);
+        --paper-fab-keyboard-focus-background: var(--paper-red-900);
+        left: -29px;
+      }
+      sortable-listb paper-fab{
+        top: -10px;
+        width: 10px;
+        height: 10px;
+      }
+      sortable-listb paper-fab.move-left{
+        left: 0px;
+      }
+      sortable-listb paper-fab.remove-group{
+        left: 20px;
+      }
+      sortable-listb paper-fab.move-right{
+        left: 40px;
+      }
+    </style>
+  
+    <paper-card hidden="{{isNotEditingScene}}" elevation="2" heading="Groups in this Scene">
+    <paper-fab mini icon="close" on-click="finishEditing"></paper-fab>
+    
+      <div class="card-content">
+        <section class="layout horizontal wrap">
+          <sortable-listb>
+            <template is="dom-repeat" items="{{fullEditGroups}}" as="group" sort-can-remove="sortGroups">
+              <paper-card elevation="3" heading="{{group.name}}">
+                <paper-fab class="move-left" mini icon="icons:chevron-left"  on-click="moveLeft"></paper-fab>
+                <paper-fab class="remove-group"  mini icon="remove" on-click="removeGroup"></paper-fab>
+                <paper-fab class="move-right"  mini icon="icons:chevron-right" on-click="moveRight"></paper-fab>
+              
+                <span>id: <span>{{group.id}}</span></span>
+                <span>index: <span>{{index}}</span></span>
+                
+              </paper-card>
+            </template>
+          </sortable-listb>
+        </section>
+      </div>
+    </paper-card>
+    
+  </template>
+
+  <script>
+
+    // element registration
+    Polymer({
+      is: "hue-scene-configure",
+
+      // add properties and methods on the element's prototype
+
+      properties: {
+        lightId: {
+          type: Number
+        },
+        editScene: {
+          type: Object,
+          value: null,
+          notify: true
+        },
+        // groups: {
+        //   type: Array,
+        //   notify:true
+        //   // computed: 'getGroupsFromScene(editScene, editScene.groups)'
+        // },
+        isNotEditingScene: {
+          type: Boolean,
+          notify: true,
+          computed: "notEditingScene(editScene)"
+        },
+        fullEditGroups: {
+          type: Array,
+          notify: true,
+          computed: 'computeFullEditGroups(editScene.groups.*)'
+        }
+      },
+      listeners:{
+        'click': 'handleClick',    
+      },
+      // sortGroups: function(a,b){
+      //   console.log('sortingroups');
+      //   var index_a = _.indexOf(this.fullEditGroups, a);
+      //   var index_b = _.indexOf(this.fullEditGroups, b);
+      //   if (a < b){
+      //     return 1;
+      //   } else {
+      //     return -1;
+      //   }
+      // },
+      computeFullEditGroups: function(groupsstar){
+        if (this.editScene == null){
+          return new Array;
+        } else {
+          // console.log('compute full edit groups');
+          // console.log(groupsstar);
+          // var ourGroupIds = _.map(this.editScene.groups, function(groupObj){return groupObj.groupId;});
+          var _this = this;
+          var filtered_groups = _.map(this.editScene.groups,function(groupObj){
+            return _.find(_this.parentNode.groups, function(gp){
+              console.log("testing if |"+ gp.id + "| is equal to |"+groupObj.groupId+"|");
+              if(gp.id == groupObj.groupId) {
+                console.log('return true');
+                return true;
+              }
+            });
+          });
+          return filtered_groups;
+        }
+      },
+      finishEditing:function(e){
+        this.fire('editing-configure-close');
+      },
+      addGroup: function(group){
+        //check if it's already present
+        var present_group = _.find(this.editScene.groups, function(group_in_scene){
+          return (group.groupId == group_in_scene.groupId);
+        });
+        if (typeof this.editScene.groups == 'undefined'){
+          this.set('editScene.groups', new Array);
+        }
+        if (typeof present_group == 'undefined'){
+          this.push("editScene.groups",{
+            groupId: group.groupId,
+            config: {
+              bri: 200,
+              xy: [0.1, 0.1],
+              on: true
+            }
+          });
+          this.fire('update-scene', {scene: this});
+        }
+      },
+      removeGroup:function(e){
+        // var group_id = e.model.group.id;
+        var index_to_remove = _.indexOf(this.fullEditGroups, e.model.group);
+        this.splice('editScene.groups', index_to_remove, 1);
+        this.fire('update-scene', {scene: this});
+      },
+      // getGroupsFromScene: function(scene, scenegroups){
+      //   if (typeof scene == 'undefined' || scene == null){
+      //     return (new Array);
+      //   } else {
+      //     return scene.groups;
+      //   }
+      // },
+      notEditingScene: function(scene){
+        if (typeof scene == 'undefined' || scene == null){
+          return true;
+        } else {
+          return false;
+        }
+      }
+    });
+    
+  </script>
+
+</dom-module>
