@@ -57,7 +57,7 @@
       },
       dataChanged: function(){
         if (!this.noAutosave  && this.initialLoadDone && typeof data != undefined){
-          console.log("data changed, gonna save:");
+          // console.log("data changed, gonna save:");
           // console.log(this.data)
           this.debounce('saveOnChange',function(){
             this.save();
@@ -78,10 +78,10 @@
         var _this = this;
         var key = this.key;
         chrome.storage.local.get(null, function(data){
-          console.log("load function in chromestorage: (key is "+ key +")");
-          console.log(data);
+          // console.log("load function in chromestorage: (key is "+ key +")");
+          // console.log(data);
           loaded_data = data[key]; 
-          console.log(loaded_data);
+          // console.log(loaded_data);
           
           _this.data = loaded_data; 
           _this.initialLoadDone = true;

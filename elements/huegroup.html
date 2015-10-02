@@ -24,14 +24,19 @@
       paper-button[active]{
         background-color: #4285f4;
       }
-      paper-fab{
+      paper-fab.edit-group{
         --paper-fab-background: var(--paper-blue-500);
         --paper-fab-keyboard-focus-background: var(--paper-blue-900);
       }
-      paper-fab.editing{
+      paper-fab.edit-group.editing{
         /*--paper-fab-*/background: var(--paper-green-500);
 /*        --paper-fab-keyboard-focus-background: var(--paper-green-900);*/
       }
+      
+      paper-fab.edit-scene{
+        top: -15px;;
+      }
+      
       .border-icon {
         display: inline-block;
 /*        background-color: #ccc;*/
@@ -46,8 +51,9 @@
     <paper-button>
       <p><span>{{name}}</span></p>
       <content></content>
-      <paper-fab mini icon="editor:mode-edit" on-click="editGroup">></paper-fab>
-      <!-- <paper-fab mini icon="editor:mode-edit"></paper-fab> -->
+      <paper-fab class="edit-group" mini icon="editor:mode-edit" on-click="editGroup">></paper-fab>
+      <paper-fab class="edit-scene" hidden="{{noSceneEditing}}" mini icon="add" on-click="addGroupToScene"></paper-fab>
+      
       
     </paper-button>
   </template>
@@ -81,6 +87,16 @@
           type: Boolean,
           value: false,
           notify: true
+        },
+        noSceneEditing: {
+          type: Boolean,
+          notify: true,
+          computed: "computeNoSceneEditing(isSceneEditing)"
+        },
+        isSceneEditing: {
+          type: Boolean,
+          notify: true,
+          value: false
         }
       },
       listeners:{
@@ -89,6 +105,12 @@
       observers: [
         'activeChanged(active)'
       ],
+      computeNoSceneEditing: function(isSceneEditing){
+        return !isSceneEditing;
+      },
+      addGroupToScene: function(){
+        this.fire("add-group-to-scene", {group: this})
+      },
       // countLights: function(s,a,p){
       //   console.log("in first part of countLights...");
       //   debugger;
@@ -104,7 +126,7 @@
       },
       activeChanged: function(is_active){
         full_button = this.querySelector('paper-button');
-        fab = full_button.querySelector('paper-fab');
+        fab = full_button.querySelector('paper-fab.edit-group');
         full_button.active = is_active;
         if (is_active){
           fab.icon = "done";

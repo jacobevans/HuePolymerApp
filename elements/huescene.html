@@ -95,9 +95,9 @@
     </paper-dialog>
     <paper-dropdown-menu icon="editor:mode-edit" noink no-animations>
       <paper-menu class="dropdown-content">
-          <paper-item>edit</paper-item>
-          <paper-item on-click="deleteScene">delete</paper-item>
-          <paper-item on-click="renameScene">rename</paper-item>
+          <paper-item on-click="editScene">   edit  </paper-item>
+          <paper-item on-click="deleteScene"> delete</paper-item>
+          <paper-item on-click="renameScene"> rename</paper-item>
     
     
         </template>
@@ -115,26 +115,39 @@
         },
         groups: {
           type: Array,
+          notify:true,
+          value: function(){return []}
         },
         name: {
           type: String,
           value: 'Unnamed Scene',
           notify: true
-        }
+        },
+        // editScene: { //just for reference to know if we're being edited
+        //   type: Object,
+        //   value: null,
+        //   notify: true
+        // }
       },
+      observers: [
+        // 'editSceneChanged(editScene)'
+      ],
       listeners:{
         'click': 'handleClick'
       },
+      activateButton: function(isActive){
+        this.$$('paper-button').active = isActive;
+      },
       dialogClosed: function(e){
         if (e.detail.confirmed){
-          console.log('delete confirmed');
+          // console.log('delete confirmed');
           this.fire("delete-scene", {scene: this});
         }
       },
       nameKeyUp: function(e){
-        console.log("Keypress!");
+        // console.log("Keypress!");
         if (e.keyCode == 13) {
-          console.log("keypress is ENTER@");
+          // console.log("keypress is ENTER@");
           var input = this.querySelector('paper-input');
           input.$.input.blur();
           e.stopPropagation(); 
@@ -156,6 +169,9 @@
         if (dialog) {
           dialog.open();
         }
+      },
+      editScene: function(e){
+        this.fire("edit-scene", {scene: this});
       },
       handleClick: function(e){
         //got a click

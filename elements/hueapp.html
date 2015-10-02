@@ -15,6 +15,8 @@
   <link rel="import" href="./huelight.html">
   <link rel="import" href="./huegroup.html">
   <link rel="import" href="./huescene.html">
+  <link rel="import" href="./huesceneconfigure.html">
+  
   
   <link rel="import" href="./chromestorage.html">
 
@@ -51,7 +53,7 @@
       <div class="card-content">
         <section class="layout horizontal wrap">
           <template is="dom-repeat" items="{{groups}}">
-            <hue-group group-id="{{item.id}}" name="{{item.name}}" lights="{{item.lights}}", active="{{item.active}}">
+            <hue-group group-id="{{item.id}}" name="{{item.name}}" lights="{{item.lights}}" active="{{item.active}}" is-scene-editing="{{isSceneEditing}}">
               
             </hue-group>
           </template>
@@ -69,6 +71,10 @@
         </section>
       </div>
     </paper-card>
+    
+    <br>
+    
+    <hue-scene-configure edit-scene="[[editScene]]" >
 <!--    <hue-light light-id="1" model-id="LLC011"></hue-light>
     <hue-light light-id="2" model-id="LLC010"></hue-light>
     <hue-light light-id="3" model-id="LLC020"></hue-light>
@@ -115,38 +121,85 @@
         dataStorage:{
           type: Object,
           notify: true,
-          computed: "computeStorageData(scenes, scenes.*)"
+          computed: "computeStorageData(scenes, scenes.*, editScene)"
+        },
+        editScene:{//currently editing scene
+          type: Object,
+          notify: true,
+          value: null
+        },
+        isSceneEditing:{
+          type:Boolean,
+          notify:true,
+          computed: "computeIsSceneEditing(editScene)"
         }
       },
       listeners:{
         'blink': 'handleBlink',
         'addOrRemoveLightFromGroup': 'addOrRemoveLightFromGroup',
         'chrome-storage-loaded-data': 'storageLoaded',
-        'delete-scene': 'deleteScene'
+        'delete-scene': 'deleteScene',
+        'edit-scene': 'handleChangeEditScene',
+        'add-group-to-scene': 'handleAddGroupToScene',
+        'update-scene': 'handleUpdateScene',
+        'editing-configure-close': 'closeSceneConfigure'
       },
       observers: [
         'editingGroupChanged(groups.*)',
       ],
+      closeSceneConfigure: function(e){
+        this.set('editScene', null);
+        var scenes = this.querySelectorAll('hue-scene');
+        _.each(scenes, function(scene){
+          scene.activateButton(false);
+        });
+      },
+      handleAddGroupToScene: function(e){
+        // addGroup(e.detail.group);
+        var config = this.$$('hue-scene-configure');
+        config.addGroup(e.detail.group);
+        // console.log("ADDING GROUP TO SCENE");
+      },
+      computeIsSceneEditing: function(scene){
+        if (typeof scene == "undefined" || scene == null){
+          return false;
+        } else {
+          return true;
+        }
+      },
+      handleChangeEditScene: function(e){
+        var scenes = this.querySelectorAll('hue-scene');
+        _.each(scenes, function(scene){
+          scene.activateButton(false);
+        });
+        var scene = e.detail.scene;
+        var index_to_edit = _.indexOf(scenes, scene);
+        scene.activateButton(true);
+        this.editScene = this.scenes[index_to_edit]
+      },
       deleteScene: function(e){
         var scenes = this.querySelectorAll('hue-scene');
         var scene = e.detail.scene;
         var index_to_remove = _.indexOf(scenes, scene);
-        console.log("removing at index: "+index_to_remove);
+        // console.log("removing at index: "+index_to_remove);
         this.splice("scenes", index_to_remove, 1);
       },
       storageLoaded: function(e){
-        console.log("storage loaded in hueapp");
+        // console.log("storage loaded in hueapp");
         this.scenes = e.detail.data.scenes;
       },
       addScene: function(e){
         // debugger
-        this.push('scenes', {name: "je"});
+        this.push('scenes', {name: "je", groups: (new Array)});
+      },
+      handleUpdateScene: function(e){
+        this.$$('chrome-storage').save();
       },
       computeStorageData: function(scenes, scenestar){
         if (typeof scenes != undefined && scenes.constructor === Array && scenes.length>0){
           data = {scenes: scenes};
-          console.log("computed storage data:")
-          console.log(data);
+          // console.log("computed storage data:")
+          // console.log(data);
           return data;
         }
       },
