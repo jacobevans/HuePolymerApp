@@ -215,7 +215,7 @@
         if(e.detail.keyboardEvent.shiftKey){
           key = key.toUpperCase();
         }
-        var node;
+        var node = null;
         var event = "mousedown";
         if (key == "a"){
           node = $('.bump-button')[0];
@@ -259,11 +259,26 @@
           event = "mouseup";
         }
         
-         else if (key == "q"){
-           node=
-         }
-      
-        triggerMouseEvent(node, event);
+        else if (key == "q"){
+          this.fire('activate-scene', {scene:this.querySelectorAll('hue-scene')[0]});
+        } else if (key == "w"){
+          this.fire('activate-scene', {scene:this.querySelectorAll('hue-scene')[1]});
+        } else if (key == "e"){
+          this.fire('activate-scene', {scene:this.querySelectorAll('hue-scene')[2]});
+        } else if (key == "r"){
+          this.fire('activate-scene', {scene:this.querySelectorAll('hue-scene')[3]});
+        } else if (key == "t"){
+          this.fire('activate-scene', {scene:this.querySelectorAll('hue-scene')[4]});
+        } else if (key == "y"){
+          this.fire('activate-scene', {scene:this.querySelectorAll('hue-scene')[5]});
+        } else if (key == "u"){
+          this.fire('activate-scene', {scene:this.querySelectorAll('hue-scene')[6]});
+        } else if (key == "i"){
+          this.fire('activate-scene', {scene:this.querySelectorAll('hue-scene')[7]});
+        } 
+        if (node != null){
+          triggerMouseEvent(node, event);
+        }
       },
       handleGroupBrightnessChange: function(e){
         this.$$('hue-interface').changeGroupBrightness(e.detail.group, e.detail.brightness);
@@ -272,7 +287,8 @@
         _.each(this.querySelectorAll('hue-scene'),function(scene){
           scene.toggleClass('active', false);
         });
-        e.target.toggleClass('active', true);
+        // debugger;
+        e.detail.scene.toggleClass('active', true);
         var sceneObj = this.scenes[_.indexOf(this.querySelectorAll('hue-scene'), e.detail.scene)]
         this.$$('hue-interface').activateScene(sceneObj);
         // debugger;
