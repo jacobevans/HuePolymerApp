@@ -277,7 +277,12 @@
               // console.log($(_this.querySelectorAll('.rgblabel')[index]));
               $(_this.querySelectorAll('.rgblabel')[index]).html(hex).css('background-color', hex);
             });
+            if (typeof this.editScene.bumps != undefined){
+              _this.notifyPath('editScene.bumps.1.groupId', _this.editScene.bumps[1].groupId);
+            }
           });
+          // debugger;
+
         }
       },
       colorSelected: function(e){
