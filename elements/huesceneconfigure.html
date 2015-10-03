@@ -4,6 +4,10 @@
 
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+
+<link rel="import" href="../bower_components/xp-overlay/xp-overlay.html">
+
 
 <link rel="import" href="../bower_components/color-picker-element/dist/color-picker.html">
 
@@ -65,6 +69,14 @@
         background: #aaa;
         color: #fff;
       }
+      paper-dialog {
+        position: fixed;
+/*        top: 16px;
+        right: 16px;*/
+        width: 225px;
+        height: 400px;
+        overflow: auto;
+      }
 /*      paper-button[toggles][active].colorful {
         background-color: rgba(66, 133, 244, 0.25);
       }
@@ -82,7 +94,7 @@
           <sortable-listb>
             <!-- <template is="dom-repeat" items="{{fullEditGroups}}" as="group" sort-can-remove="sortGroups"> -->
               <template is="dom-repeat" items="{{editScene.groups}}" as="group" sort-can-remove="sortGroups">
-              <paper-card elevation="3" heading="{{getGroupNameFromIndex(index)}}">
+              <paper-card class="scene-config-group" elevation="3" heading="{{getGroupNameFromIndex(index)}}">
                 <div class="card-content inside-card">
                   <paper-fab class="move-left" mini icon="icons:chevron-left"  on-click="moveLeft"></paper-fab>
                   <paper-fab class="remove-group"  mini icon="remove" on-click="removeGroup"></paper-fab>
@@ -95,15 +107,24 @@
                     <!-- <span>{{group.config.rgb.hex}}</span> -->
                     <div class="rgblabel"></div>
                   <!-- </paper-card> -->
-                  <paper-button raised class="bump-button colorful">1</paper-button>
-                  <paper-button raised class="bump-button colorful">2</paper-button>
-                  <paper-button raised class="bump-button colorful">3</paper-button>
-                  <paper-button raised class="bump-button colorful">4</paper-button>
-                  <paper-button raised class="bump-button colorful">5</paper-button>
-                  <paper-button raised class="bump-button colorful">6</paper-button>
-                  <paper-button raised class="bump-button colorful">7</paper-button>
-                  <paper-button raised class="bump-button colorful">8</paper-button>
+                  <paper-button raised data-bump-number="1" on-click="bumpButtonClick" class="bump-button colorful">1</paper-button> 
+                  <paper-button raised data-bump-number="2" on-click="bumpButtonClick" class="bump-button colorful">2</paper-button>
+                  <paper-button raised data-bump-number="3" on-click="bumpButtonClick" class="bump-button colorful">3</paper-button>
+                  <paper-button raised data-bump-number="4" on-click="bumpButtonClick" class="bump-button colorful">4</paper-button>
+                  <paper-button raised data-bump-number="5" on-click="bumpButtonClick" class="bump-button colorful">5</paper-button>
+                  <paper-button raised data-bump-number="6" on-click="bumpButtonClick" class="bump-button colorful">6</paper-button>
+                  <paper-button raised data-bump-number="7" on-click="bumpButtonClick" class="bump-button colorful">7</paper-button>
+                  <paper-button raised data-bump-number="8" on-click="bumpButtonClick" class="bump-button colorful">8</paper-button>
                 </div>
+                <paper-dialog on-iron-overlay-closed="bumpDialogClosed" class="bump-picker" data-groupid$="{{group.id}}" modal>
+                  <div style="height:250px">
+                    <color-picker width="175" height="175" on-colorselected="dialogBumpColorSelected"></color-picker>
+                    <div class="rgblabel"></div>
+                    <div class="buttons">
+                      <paper-button dialog-confirm autofocus>OK</paper-button>
+                    </div>
+                  </div>
+                </paper-dialog>
               </paper-card>
             </template>
           </sortable-listb>
@@ -157,6 +178,43 @@
       observers: [
         'editSceneChanged(editScene)',
       ],
+      bumpButtonClick: function(e){
+        var button = e.target.parentElement;
+        var bump_number = button.getAttribute('data-bump-number');
+        var dialog = e.target.parentNode.parentNode.parentNode.querySelector('paper-dialog');
+        dialog.setAttribute('data-bump-number', bump_number);
+        
+        var rect = button.getBoundingClientRect();
+        $(dialog).css({top:(rect.top - 400), left: (rect.left+25)})
+        dialog.open();
+      },
+      bumpDialogClosed: function(e){
+        // debugger;
+        if (e.detail.confirmed){
+          var $e = $(e.target);
+          var xy = $e.data('xy');
+          var hex = $e.data('hex');
+          var bump_number = $e.data('bumpNumber');
+          
+          var group_index = _.indexOf(e.target.parentNode.parentNode.querySelectorAll('paper-card.scene-config-group'),e.target.parentNode);
+          var group_id = this.editScene.groups[group_index].groupId;
+          
+          
+          this.bumps[bump_number].hex = hex;
+          this.bumps[bump_number].xy = xy;
+          this.bumps[bump_number].groupId = group_id;
+          console.log(this.bumps[bump_number]);
+        }
+      },
+      dialogBumpColorSelected:function(e){
+        var label = e.target.parentNode.querySelector('.rgblabel');
+        var dialog = e.target.parentNode.parentNode;
+        var hex = e.detail.hex;
+        var xy = window.getRGBtoXY(e.detail.rgb.r,e.detail.rgb.g, e.detail.rgb.b);
+        $(label).html(hex).css('background-color', hex);
+        $(dialog).data('xy', xy).data('hex', hex);
+          // label.setAttribute('data-bump')
+      },
       editorHeading: function(scene){
         if (scene!=null){
           return "Editing Scene: "+ scene.name;
