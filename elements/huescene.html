@@ -123,6 +123,11 @@
           value: 'Unnamed Scene',
           notify: true
         },
+        bumps: {
+          type: Object,
+          notify:true// ,
+//           value: function(){return defaultBumpData}
+        }
         // editScene: { //just for reference to know if we're being edited
         //   type: Object,
         //   value: null,
@@ -178,6 +183,51 @@
       },
       ready: function(){
         var self = this;
+      }
+      
+      defaultBumpData: function(){
+        return {
+            "1":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "2":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "3":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "4":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "5":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "6":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "7":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "8":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+          }
       }
     });
     

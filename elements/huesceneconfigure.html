@@ -165,11 +165,6 @@
           type: Array,
           notify: true,
           computed: 'computeFullEditGroups(editScene.groups.*)'
-        },
-        bumps: {
-          type: Object,
-          notify:true// ,
-//           value: function(){return defaultBumpData}
         }
       },
       listeners:{
@@ -200,10 +195,10 @@
           var group_id = this.editScene.groups[group_index].groupId;
           
           
-          this.bumps[bump_number].hex = hex;
-          this.bumps[bump_number].xy = xy;
-          this.bumps[bump_number].groupId = group_id;
-          console.log(this.bumps[bump_number]);
+          this.editScene.bumps[bump_number].hex = hex;
+          this.editScene.bumps[bump_number].xy = xy;
+          this.editScene.bumps[bump_number].groupId = group_id;
+          console.log(this.editScene.bumps[bump_number]);
         }
       },
       dialogBumpColorSelected:function(e){
@@ -378,50 +373,7 @@
           return false;
         }
       },
-      defaultBumpData: function(){
-        return {
-            "1":{
-              hex: "#000000",
-              xy: [0,0],
-              groupId: "0"
-            },
-            "2":{
-              hex: "#000000",
-              xy: [0,0],
-              groupId: "0"
-            },
-            "3":{
-              hex: "#000000",
-              xy: [0,0],
-              groupId: "0"
-            },
-            "4":{
-              hex: "#000000",
-              xy: [0,0],
-              groupId: "0"
-            },
-            "5":{
-              hex: "#000000",
-              xy: [0,0],
-              groupId: "0"
-            },
-            "6":{
-              hex: "#000000",
-              xy: [0,0],
-              groupId: "0"
-            },
-            "7":{
-              hex: "#000000",
-              xy: [0,0],
-              groupId: "0"
-            },
-            "8":{
-              hex: "#000000",
-              xy: [0,0],
-              groupId: "0"
-            },
-          }
-      }
+
     
     });
     
