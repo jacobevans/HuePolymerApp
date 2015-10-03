@@ -3,6 +3,8 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
 <link rel="import" href="../bower_components/color-picker-element/dist/color-picker.html">
 
 
@@ -29,17 +31,59 @@
       sortable-listb paper-fab.move-right{
         left: 40px;
       }
+      .card-content.inside-card{
+        width:175px;
+      }
+      
+      rgblabel{
+        width: 200px;
+        height:30px;
+        border:1px solid black;
+      }
+      
+      paper-button.bump-button{
+        background: #4285f4;
+        color: #fff;
+        min-width: 10px;
+        width: 22px;
+        padding: 5px 0 5px 0;
+      }
+      
+      paper-button.colorful.bump-active {
+        color: #4285f4;
+      }
+      paper-button.colorful {
+        color: #aaa;
+      }
+
+      paper-button[raised].colorful.bump-active {
+        background: #4285f4;
+        color: #fff;
+      }
+
+      paper-button[raised].colorful {
+        background: #aaa;
+        color: #fff;
+      }
+/*      paper-button[toggles][active].colorful {
+        background-color: rgba(66, 133, 244, 0.25);
+      }
+
+      paper-button[toggles][active][raised].colorful {
+        background-color: rgba(66, 133, 244, 0.75);
+      }*/
     </style>
   
-    <paper-card hidden="{{isNotEditingScene}}" elevation="2" heading="Groups in this Scene">
+    <paper-card hidden="{{isNotEditingScene}}" elevation="2" heading="{{editorHeading(editScene)}}">
     <paper-fab mini icon="close" on-click="finishEditing"></paper-fab>
     
       <div class="card-content">
         <section class="layout horizontal wrap">
           <sortable-listb>
-            <template is="dom-repeat" items="{{fullEditGroups}}" as="group" sort-can-remove="sortGroups">
-              <paper-card elevation="3" heading="{{group.name}}">
-                <div class="card-content">
+            <!-- <template is="dom-repeat" items="{{fullEditGroups}}" as="group" sort-can-remove="sortGroups"> -->
+              <template is="dom-repeat" items="{{editScene.groups}}" as="group" sort-can-remove="sortGroups">
+              <paper-card elevation="3" heading="{{getGroupNameFromIndex(index)}}">
+                <div class="card-content inside-card">
                   <paper-fab class="move-left" mini icon="icons:chevron-left"  on-click="moveLeft"></paper-fab>
                   <paper-fab class="remove-group"  mini icon="remove" on-click="removeGroup"></paper-fab>
                   <paper-fab class="move-right"  mini icon="icons:chevron-right" on-click="moveRight"></paper-fab>
@@ -47,9 +91,18 @@
                   <!-- <span>id: <span>{{group.id}}</span></span>
                   <span>index: <span>{{index}}</span></span> -->
                   <!-- <paper-card elevation="4"> -->
-                    <color-picker width="200" height="200" on-colorselected="colorSelected"></color-picker>
-                    <span>{{rgbColorAtIndex(group)}}</span>
+                    <color-picker width="175" height="175" on-colorselected="colorSelected"></color-picker>
+                    <!-- <span>{{group.config.rgb.hex}}</span> -->
+                    <div class="rgblabel"></div>
                   <!-- </paper-card> -->
+                  <paper-button raised class="bump-button colorful">1</paper-button>
+                  <paper-button raised class="bump-button colorful">2</paper-button>
+                  <paper-button raised class="bump-button colorful">3</paper-button>
+                  <paper-button raised class="bump-button colorful">4</paper-button>
+                  <paper-button raised class="bump-button colorful">5</paper-button>
+                  <paper-button raised class="bump-button colorful">6</paper-button>
+                  <paper-button raised class="bump-button colorful">7</paper-button>
+                  <paper-button raised class="bump-button colorful">8</paper-button>
                 </div>
               </paper-card>
             </template>
@@ -91,21 +144,65 @@
           type: Array,
           notify: true,
           computed: 'computeFullEditGroups(editScene.groups.*)'
+        },
+        bumps: {
+          type: Object,
+          notify:true// ,
+//           value: function(){return defaultBumpData}
         }
       },
       listeners:{
         // 'click': 'handleClick',
       },
+      observers: [
+        'editSceneChanged(editScene)',
+      ],
+      editorHeading: function(scene){
+        if (scene!=null){
+          return "Editing Scene: "+ scene.name;
+        } else {
+          return "Scene Editor";
+        }
+      },
+      getGroupNameFromIndex: function(index){
+        return this.fullEditGroups[index].name;
+      },
+      editSceneChanged: function(editScene){
+        console.log('changed...');
+        if(editScene != null){
+          var _this = this
+          this.async(function() {
+            console.log('not null!');
+            _.each(editScene.groups, function(group, index){
+            
+              var hex = group.config.rgb.hex;
+              console.log('hex: '+ hex);
+              // debugger;
+              console.log($(_this.querySelectorAll('.rgblabel')[index]));
+              $(_this.querySelectorAll('.rgblabel')[index]).html(hex).css('background-color', hex);
+            });
+          });
+        }
+      },
       colorSelected: function(e){
-        var group_index = _.indexOf(this.fullEditGroups, e.model.group);
+        var group_index = _.indexOf(this.editScene.groups, e.model.group);
+        console.log("GROUP INDEX: "+ group_index);
+        console.log(e.target);
         this.editScene.groups[group_index].config.rgb = e.detail;
         this.editScene.groups[group_index].config.xy = window.getRGBtoXY(e.detail.rgb.r,e.detail.rgb.g, e.detail.rgb.b)
+        this.set('editScene.groups.'+group_index+'.config', this.editScene.groups[group_index].config);
+        
+        // debugger;
+        var hex = this.editScene.groups[group_index].config.rgb.hex;
+        $(e.target.parentElement.querySelector('.rgblabel')).html(hex).css('background-color', hex);
+        
+        this.notifyPath('editScene.groups.'+ group_index +'.config.rgb.hex', this.editScene.groups[group_index].config.rgb.hex)
         this.fire('update-scene', {scene: this});
       },
       rgbColorAtIndex: function(group){
-        console.log("IN RGB COLOR FUNC")
-        console.log(this);
-        console.log(group);
+        // console.log("IN RGB COLOR FUNC")
+        // console.log(this);
+        // console.log(group);
         // if (typeof this.editScene.groups[index].config.rgb != 'undefined'){
         //   return this.editScene.groups[index].config.rgb.hex;
         // } else {
@@ -134,6 +231,7 @@
         //   console.log('listener function');
         //   _this.fire(colorselected, e.detail);
         // });
+        this.bumps = this.defaultBumpData();
       },
       computeFullEditGroups: function(groupsstar){
         if (this.editScene == null){
@@ -187,7 +285,7 @@
         }
       },
       moveLeft: function(e){
-        var index_to_move = _.indexOf(this.fullEditGroups, e.model.group);
+        var index_to_move = _.indexOf(this.editScene.groups, e.model.group);
         if (index_to_move > 0){
           spliced = this.splice('editScene.groups', index_to_move, 1);
           this.splice('editScene.groups', index_to_move-1, 0, spliced[0]);
@@ -195,7 +293,7 @@
         }
       },
       moveRight: function(e){
-        var index_to_move = _.indexOf(this.fullEditGroups, e.model.group);
+        var index_to_move = _.indexOf(this.editScene.groups, e.model.group);
         if (index_to_move < (this.editScene.groups.length - 1)){
           spliced = this.splice('editScene.groups', index_to_move, 1);
           this.splice('editScene.groups', index_to_move+1, 0, spliced[0]);
@@ -204,7 +302,7 @@
       },
       removeGroup:function(e){
         // var group_id = e.model.group.id;
-        var index_to_remove = _.indexOf(this.fullEditGroups, e.model.group);
+        var index_to_remove = _.indexOf(this.editScene.groups, e.model.group);
         this.splice('editScene.groups', index_to_remove, 1);
         this.fire('update-scene', {scene: this});
       },
@@ -221,7 +319,52 @@
         } else {
           return false;
         }
+      },
+      defaultBumpData: function(){
+        return {
+            "1":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "2":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "3":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "4":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "5":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "6":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "7":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "8":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+          }
       }
+    
     });
     
   </script>

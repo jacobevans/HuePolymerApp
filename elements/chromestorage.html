@@ -70,8 +70,8 @@
       save: function(){
         var savedata = (new Object);
         savedata[this.key] = this.data;
-        console.log("--SAVING DATA:");
-        console.log(savedata);
+        // console.log("--SAVING DATA:");
+        // console.log(savedata);
         chrome.storage.local.set(savedata);
       },
       load: function(){

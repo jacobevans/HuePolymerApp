@@ -2,6 +2,8 @@
 <link rel="import" href="../bower_components/jquery/dist/jquery.js">
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-icons/editor-icons.html">
@@ -17,7 +19,15 @@
         margin: 8px;
         padding: 0 8px 8px 8px;
       }*/
-    
+      :host ::content paper-fab{
+        background: var(--paper-blue-500);
+/*        --paper-fab-keyboard-focus-background: var(--paper-blue-900);*/
+        width:2px;
+        height:2px;
+      }
+      .group-container {
+        width:150px;
+      }
       paper-button{
         background-color: rgba(66, 133, 244, 0.25);
       }
@@ -27,6 +37,7 @@
       paper-fab.edit-group{
         --paper-fab-background: var(--paper-blue-500);
         --paper-fab-keyboard-focus-background: var(--paper-blue-900);
+        top:32px;
       }
       paper-fab.edit-group.editing{
         /*--paper-fab-*/background: var(--paper-green-500);
@@ -36,6 +47,9 @@
       paper-fab.edit-scene{
         top: -15px;;
       }
+      paper-fab.edit-group-done{
+        left:40px;
+      }
       
       .border-icon {
         display: inline-block;
@@ -44,18 +58,59 @@
         padding: 4px;
         border:2px solid #222;
       }
+      paper-slider{
+        width:120px;
+      }
+      paper-dropdown-menu {
+        text-align: left;
+        margin: auto;
+        top: -76px;
+        left: 0px;
+/*        width: 180px;*/
+      }
+      paper-input{
+        --paper-input-container-underline-disabled: {
+          display: none;
+        };
+        --paper-input-container-disabled: {
+          opacity: 1.0;
+          text-align: center;
+        };
+        --paper-input-container: {
+          opacity: 1.0;
+          text-align: center;
+        };
+        --paper-input-container-input: {
+          text-align: center;
+        }
+        --paper-input-container-input-color: #000;
+        }/**/
     </style>
   
     <!-- local DOM for your element -->
     <!-- <p><span>{{name}}</span></p> -->
-    <paper-button>
-      <p><span>{{name}}</span></p>
-      <content></content>
-      <paper-fab class="edit-group" mini icon="editor:mode-edit" on-click="editGroup">></paper-fab>
-      <paper-fab class="edit-scene" hidden="{{noSceneEditing}}" mini icon="add" on-click="addGroupToScene"></paper-fab>
+    <div class="group-container">
+      <paper-button on-click="handleClick">
+        <paper-input on-blur="inputBlur" label="" on-keypress="nameKeyUp" on-enter="" disabled no-label-float maxlength="10" value="{{name}}"></paper-input>
       
+        <!-- <p><span>{{name}}</span></p> -->
+        <content></content>
+        <paper-fab class="edit-group-done" hidden mini icon="editor:mode-edit" on-click="editGroup">></paper-fab>
+        <paper-fab class="edit-scene" hidden="{{noSceneEditing}}" mini icon="add" on-click="addGroupToScene"></paper-fab>
       
-    </paper-button>
+      </paper-button>
+      <paper-slider value="{{brightness}}" on-click="sliderClick" on-value-change="changeGroupBrightness" min="0" max="255"></paper-slider>
+      <paper-dropdown-menu icon="editor:mode-edit" noink no-animations>
+        <paper-menu class="dropdown-content">
+            <paper-item on-click="editGroup">   edit  </paper-item>
+            <!-- <paper-item on-click="deleteGroup"> delete</paper-item> -->
+            <paper-item on-click="renameGroup"> rename</paper-item>
+    
+    
+          </template>
+        </paper-menu>
+      </paper-dropdown-menu>
+    </div>
   </template>
   <script>
 
@@ -73,6 +128,11 @@
           type: Array,
           notify: true,
           value: []
+        },
+        brightness: {
+          type: Number,
+          // notify:true
+          // value:12
         },
         // lightCount:{
         //   type: Number,
@@ -100,11 +160,39 @@
         }
       },
       listeners:{
-        'click': 'handleClick'
+        // 'click': 'handleClick'
       },
       observers: [
-        'activeChanged(active)'
+        'activeChanged(active)',
       ],
+      nameKeyUp: function(e){
+        // console.log("Keypress!");
+        if (e.keyCode == 13) {
+          // console.log("keypress is ENTER@");
+          var input = this.querySelector('paper-input');
+          input.$.input.blur();
+          e.stopPropagation(); 
+          return false;
+        }
+      },
+      inputBlur: function(e){
+        var input = e.target;
+        input.disabled = true;
+        this.fire('group-name-changed', {group: this, name: e.target.value})
+      },
+      renameGroup: function(e){
+        var input = this.querySelector('paper-input');
+        input.disabled = false;
+        input.$.input.focus();
+        this.querySelector("paper-dropdown-menu").close();
+      },
+      sliderClick:function(e){
+        e.preventDefault();
+      },
+      changeGroupBrightness: function(e){
+        // this.brightness = e.target.value();
+        this.fire('group-brightness-changed', {group: this, brightness: e.target.value});
+      },
       computeNoSceneEditing: function(isSceneEditing){
         return !isSceneEditing;
       },
@@ -126,8 +214,9 @@
       },
       activeChanged: function(is_active){
         full_button = this.querySelector('paper-button');
-        fab = full_button.querySelector('paper-fab.edit-group');
+        fab = full_button.querySelector('paper-fab.edit-group-done');
         full_button.active = is_active;
+        fab.hidden = !is_active;
         if (is_active){
           fab.icon = "done";
           fab.toggleClass('editing', true);

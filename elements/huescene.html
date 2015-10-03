@@ -174,9 +174,7 @@
         this.fire("edit-scene", {scene: this});
       },
       handleClick: function(e){
-        //got a click
-        // console.log("GOT A CLICK");
-        // this.fire('activateScene', {lights: this.lights});
+        this.fire('activate-scene', {scene:this});
       },
       ready: function(){
         var self = this;

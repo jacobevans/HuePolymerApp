@@ -31,9 +31,18 @@
         top: -56px;
         left: -29px;
       }
+      paper-fab#add-group{
+        top: -56px;
+        left: -29px;
+      }
       paper-fab#toggle-lights{
         top: -56px;
         left: -29px;
+      }
+      hue-scene.active{
+        background-color: rgba(200,0,0,0.2);
+        border-left: 6px solid white;
+        border-right: 6px solid white;
       }
 
       
@@ -56,6 +65,7 @@
     <br>
     <paper-card elevation="1" heading="Groups">
       <div class="card-content">
+        <!-- <paper-fab mini id="add-group" icon="add" on-click="addGroup"></paper-fab> -->
         <section class="layout horizontal wrap">
           <template is="dom-repeat" items="{{groups}}">
             <hue-group group-id="{{item.id}}" name="{{item.name}}" lights="{{item.lights}}" active="{{item.active}}" is-scene-editing="{{isSceneEditing}}">
@@ -147,11 +157,29 @@
         'edit-scene': 'handleChangeEditScene',
         'add-group-to-scene': 'handleAddGroupToScene',
         'update-scene': 'handleUpdateScene',
-        'editing-configure-close': 'closeSceneConfigure'
+        'editing-configure-close': 'closeSceneConfigure',
+        'activate-scene': 'handleActivateScene',
+        'group-brightness-changed': 'handleGroupBrightnessChange',
+        'group-name-changed': 'handleGroupNameChange'
+        
       },
       observers: [
         'editingGroupChanged(groups.*)',
       ],
+      handleGroupNameChange: function(e){
+        this.$$('hue-interface').changeGroupName(e.detail.group, e.detail.name);
+      },
+      handleGroupBrightnessChange: function(e){
+        this.$$('hue-interface').changeGroupBrightness(e.detail.group, e.detail.brightness);
+      },
+      handleActivateScene: function(e){
+        _.each(this.querySelectorAll('hue-scene'),function(scene){
+          scene.toggleClass('active', false);
+        });
+        e.target.toggleClass('active', true);
+        var sceneObj = this.scenes[_.indexOf(this.querySelectorAll('hue-scene'), e.detail.scene)]
+        this.$$('hue-interface').activateScene(sceneObj);
+      },
       toggleLights: function(e){
         var lightsEl = this.querySelector('#lights');
         lightsEl.hidden = !lightsEl.hidden;
@@ -201,6 +229,10 @@
         // debugger
         this.push('scenes', {name: "je", groups: (new Array)});
       },
+      // addGroup: function(e){
+      //   // debugger
+      //   this.push('groups', {name: "new grp", groups: (new Array)});
+      // },
       handleUpdateScene: function(e){
         this.$$('chrome-storage').save();
       },

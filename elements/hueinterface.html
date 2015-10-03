@@ -91,6 +91,36 @@
       //   ]
       //   return lights;
       // },
+      activateScene: function(scene){
+        console.log('activating scene: ');
+        console.log(scene);
+        var _this = this;
+        _.each(scene.groups, function(group){
+          $.ajax({
+            url: _this._baseURL() + "/groups/" + group.groupId + "/action",
+            type: "PUT",
+            data: JSON.stringify({
+              xy: group.config.xy
+            })
+          });
+        });
+      },
+      changeGroupBrightness: function(group,brightness){
+        $.ajax({
+          url: this._baseURL() + "/groups/" + group.groupId + "/action",
+          type: "PUT",
+          data: JSON.stringify({
+            bri: brightness
+          })
+        });
+      },
+      changeGroupName: function(group, name){
+        $.ajax({
+          url: this._baseURL() + "/groups/" + group.groupId,
+          type: "PUT",
+          data: JSON.stringify({name: name})
+        })
+      },
       blinkLight: function(id){
         $.ajax({
           url: this._baseURL() + "/lights/" + id + "/state",
@@ -159,10 +189,17 @@
                 });
             });
             groups = _.map(_.pairs(data.groups), function(pair){
+              console.log({
+                id: pair[0],
+                lights: pair[1].lights,
+                name: pair[1].name,
+                brightness: pair[1].action.bri
+              });
               return({
                 id: pair[0],
                 lights: pair[1].lights,
-                name: pair[1].name
+                name: pair[1].name,
+                brightness: 150// pair[1].action.bri
               });
             });
             _this.lights = lights;
