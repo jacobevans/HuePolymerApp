@@ -172,15 +172,40 @@
       },
       observers: [
         'editSceneChanged(editScene)',
+        'bumpsChanged(editScene.bumps.*)'
       ],
+      bumpsChanged: function(bumpsstar){
+        console.log("BUMPS CHAAAANGED");
+        console.log(bumpsstar);
+        if (bumpsstar.path.match(/editScene.bumps.[0-9].groupId/)){
+          _.each(this.querySelectorAll('.bump-button'), function(button){
+            button.toggleClass('bump-active',false);
+            $(button).css('background-color', "#aaaaaa")
+          });
+          var _this = this;
+          _.each(bumpsstar.base, function(bump_config, bump_number){
+            // debugger;
+            if (bump_config.groupId != "0"){
+              var card_index = _.findIndex(_this.editScene.groups, function(grp){if(grp.groupId==bump_config.groupId){return true;}});
+              var card = _this.querySelectorAll('paper-card.scene-config-group')[card_index];
+              var button = card.querySelector("paper-button.bump-button[data-bump-number='"+ bump_number +"']");
+              console.log('togglin class: '+card_index + " | "+ bump_config.groupId + " | " + JSON.stringify(bump_config));
+              // console.log(button);
+              $(button).css('background-color', bump_config.hex)
+              button.toggleClass('bump-active',true);
+            }
+          });
+        }
+      },
       bumpButtonClick: function(e){
         var button = e.target.parentElement;
         var bump_number = button.getAttribute('data-bump-number');
         var dialog = e.target.parentNode.parentNode.parentNode.querySelector('paper-dialog');
-        dialog.setAttribute('data-bump-number', bump_number);
+        // console.log('setting bump number: '+ bump_number); //this is right
+        // dialog.setAttribute('data-bump-number', bump_number);
         
         var rect = button.getBoundingClientRect();
-        $(dialog).css({top:(rect.top - 400), left: (rect.left+25)})
+        $(dialog).css({top:(rect.top - 400), left: (rect.left+25)}).data('bump-number', bump_number)
         dialog.open();
       },
       bumpDialogClosed: function(e){
@@ -189,16 +214,34 @@
           var $e = $(e.target);
           var xy = $e.data('xy');
           var hex = $e.data('hex');
-          var bump_number = $e.data('bumpNumber');
+          var bump_number = $e.data('bump-number');
+          // debugger;
           
           var group_index = _.indexOf(e.target.parentNode.parentNode.querySelectorAll('paper-card.scene-config-group'),e.target.parentNode);
           var group_id = this.editScene.groups[group_index].groupId;
           
+          if(typeof this.editScene.bumps == "undefined"){
+            this.set('editScene.bumps',this.defaultBumpData());
+          }
           
-          this.editScene.bumps[bump_number].hex = hex;
-          this.editScene.bumps[bump_number].xy = xy;
-          this.editScene.bumps[bump_number].groupId = group_id;
-          console.log(this.editScene.bumps[bump_number]);
+          var config = {
+            hex: hex,
+            xy: xy,
+            groupId: group_id
+          };
+          // this.editScene.bumps[bump_number].hex = hex;
+          // this.editScene.bumps[bump_number].xy = xy;
+          // this.editScene.bumps[bump_number].groupId = group_id;
+          // console.log('bump NUMBER: '+bump_number);
+          this.set('editScene.bumps.'+bump_number, config);
+          this.notifyPath('editScene.bumps.'+ bump_number +'.hex', hex);
+          this.notifyPath('editScene.bumps.'+ bump_number +'.xy', xy);
+          this.notifyPath('editScene.bumps.'+ bump_number +'.groupId', group_id);
+          
+          
+          // console.log(this.editScene.bumps[bump_number]);
+          this.fire('update-scene', {scene: this});
+          
         }
       },
       dialogBumpColorSelected:function(e){
@@ -221,17 +264,17 @@
         return this.fullEditGroups[index].name;
       },
       editSceneChanged: function(editScene){
-        console.log('changed...');
+        // console.log('changed...');
         if(editScene != null){
           var _this = this
           this.async(function() {
-            console.log('not null!');
+            // console.log('not null!');
             _.each(editScene.groups, function(group, index){
             
               var hex = group.config.rgb.hex;
-              console.log('hex: '+ hex);
+              // console.log('hex: '+ hex);
               // debugger;
-              console.log($(_this.querySelectorAll('.rgblabel')[index]));
+              // console.log($(_this.querySelectorAll('.rgblabel')[index]));
               $(_this.querySelectorAll('.rgblabel')[index]).html(hex).css('background-color', hex);
             });
           });
@@ -239,8 +282,8 @@
       },
       colorSelected: function(e){
         var group_index = _.indexOf(this.editScene.groups, e.model.group);
-        console.log("GROUP INDEX: "+ group_index);
-        console.log(e.target);
+        // console.log("GROUP INDEX: "+ group_index);
+        // console.log(e.target);
         this.editScene.groups[group_index].config.rgb = e.detail;
         this.editScene.groups[group_index].config.xy = window.getRGBtoXY(e.detail.rgb.r,e.detail.rgb.g, e.detail.rgb.b)
         this.set('editScene.groups.'+group_index+'.config', this.editScene.groups[group_index].config);
@@ -284,7 +327,6 @@
         //   console.log('listener function');
         //   _this.fire(colorselected, e.detail);
         // });
-        this.bumps = this.defaultBumpData();
       },
       computeFullEditGroups: function(groupsstar){
         if (this.editScene == null){
@@ -373,7 +415,50 @@
           return false;
         }
       },
-
+      defaultBumpData: function(){
+        return {
+            "1":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "2":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "3":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "4":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "5":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "6":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "7":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+            "8":{
+              hex: "#000000",
+              xy: [0,0],
+              groupId: "0"
+            },
+          }
+      }
     
     });
     
