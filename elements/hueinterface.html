@@ -114,6 +114,16 @@
           })
         });
       },
+      setGroupColor: function(groupId, xy){
+        $.ajax({
+          url: this._baseURL() + "/groups/" + groupId + "/action",
+          type: "PUT",
+          data: JSON.stringify({
+            xy: xy,
+            transitiontime: 1
+          })
+        });
+      },
       changeGroupName: function(group, name){
         $.ajax({
           url: this._baseURL() + "/groups/" + group.groupId,

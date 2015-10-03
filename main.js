@@ -3,10 +3,18 @@
 //   document.querySelector('#toast').show();
 // }
 // ;//.text("You can't remove the last light from a group.");
+// document.onkeydown = function(e) {
+//   // console.log(e)
+// };
 window.displayAlert = function(text){
   var toast = document.querySelector("paper-toast#toast");
   toast.text = text;
   toast.show();
+}
+window.triggerMouseEvent = function(node, eventType) {
+    var clickEvent = document.createEvent ('MouseEvents');
+    clickEvent.initEvent (eventType, true, true);
+    node.dispatchEvent (clickEvent);
 }
 window.getRGBtoXY = function(r,g,b){
   // For the hue bulb the corners of the triangle are:
